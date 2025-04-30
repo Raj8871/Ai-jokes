@@ -1,19 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Copy, Heart, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
-
-type ContentItem = {
-  id: string;
-  type: 'joke' | 'shayari';
-  text: string;
-  category: string;
-  lang: 'en' | 'hi';
-};
+import type { ContentItem } from '@/app/page'; // Import type
 
 interface ContentCardProps {
   content: ContentItem;
@@ -22,7 +15,18 @@ interface ContentCardProps {
 
 const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
   const { toast } = useToast();
-  const [isFavorite, setIsFavorite] = useState(false); // Placeholder state
+  const [isFavorite, setIsFavorite] = useState(false); // Default state
+
+  // Key for local storage
+  const favoriteStorageKey = `shayariSagaFavorite_${content.id}`;
+
+  // Load favorite state from local storage on mount
+  useEffect(() => {
+    const savedFavorite = localStorage.getItem(favoriteStorageKey);
+    if (savedFavorite) {
+      setIsFavorite(JSON.parse(savedFavorite));
+    }
+  }, [favoriteStorageKey]); // Depend on the key
 
   const handleCopy = () => {
     navigator.clipboard.writeText(content.text)
@@ -57,8 +61,6 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
              });
         } else {
              // Fallback for browsers that don't support navigator.share
-             // Maybe open specific social media links in new tabs
-             // For simplicity, just copy for now as a fallback
              handleCopy();
              toast({
                  title: language === 'en' ? "Link Copied" : "लिंक कॉपी किया गया",
@@ -67,7 +69,6 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
         }
      } catch (err) {
        console.error('Failed to share: ', err);
-       // Don't show error toast if user cancelled share dialog etc.
        if (!err?.toString().includes('AbortError')) {
              toast({
              title: language === 'en' ? "Error Sharing" : "शेयर करने में त्रुटि",
@@ -80,12 +81,15 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
 
 
   const handleFavorite = () => {
-    // Placeholder: In a real app, save/remove favorite status to user profile (localStorage/Firebase)
-    setIsFavorite(!isFavorite);
+    const newFavoriteState = !isFavorite;
+    setIsFavorite(newFavoriteState);
+    // Save to local storage
+    localStorage.setItem(favoriteStorageKey, JSON.stringify(newFavoriteState));
     toast({
-      title: isFavorite ? (language === 'en' ? 'Removed from Favorites' : 'पसंदीदा से हटाया गया')
-                       : (language === 'en' ? 'Added to Favorites' : 'पसंदीदा में जोड़ा गया'),
+      title: newFavoriteState ? (language === 'en' ? 'Added to Favorites' : 'पसंदीदा में जोड़ा गया')
+                       : (language === 'en' ? 'Removed from Favorites' : 'पसंदीदा से हटाया गया'),
     });
+    // TODO: In a real app with user auth, sync this with Firestore user profile
   };
 
   return (
@@ -112,7 +116,7 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
            </motion.div>
            <motion.div whileTap={{ scale: 0.9 }}>
             <Button variant="ghost" size="icon" onClick={handleFavorite} aria-label={language === 'en' ? 'Favorite' : 'पसंदीदा'}>
-                 <Heart className={`h-4 w-4 ${isFavorite ? 'fill-destructive text-destructive' : ''}`} />
+                 <Heart className={`h-4 w-4 transition-colors duration-200 ${isFavorite ? 'fill-destructive text-destructive' : 'text-muted-foreground hover:text-destructive'}`} />
             </Button>
            </motion.div>
         </CardFooter>

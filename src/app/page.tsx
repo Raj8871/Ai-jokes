@@ -57,7 +57,7 @@ const mockContent = {
   }
 };
 
-type ContentItem = {
+export type ContentItem = { // Export type for use in ContentCard
   id: string;
   type: 'joke' | 'shayari';
   text: string;
@@ -370,8 +370,19 @@ export default function Home() {
       <Tabs defaultValue="jokes" className="w-full max-w-4xl">
         <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
           {categories.map(cat => (
-            <TabsTrigger key={cat.key} value={cat.key} className={language === 'hi' ? 'font-hindi' : ''}>
-              {cat[language]}
+            <TabsTrigger
+                key={cat.key}
+                value={cat.key}
+                className={language === 'hi' ? 'font-hindi' : ''}
+                asChild // Use asChild to allow motion.div inside
+            >
+                <motion.button
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                >
+                    {cat[language]}
+                </motion.button>
             </TabsTrigger>
           ))}
         </TabsList>
