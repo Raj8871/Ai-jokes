@@ -6,6 +6,15 @@ import ContentCard from '@/components/content/content-card';
 import SearchFilter from '@/components/content/search-filter';
 import type { ContentItem } from '@/app/page'; // Reuse the type
 import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Loader2, Wand2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { generateContent, type GenerateContentInput, type GenerateContentOutput } from '@/ai/flows/generate-content-flow';
+
 
 // Mock data (can be moved to a shared location or fetched)
 const mockJokes = {
@@ -41,11 +50,35 @@ const pageText = {
     title: "Jokes",
     description: "Tickle your funny bone with our collection of jokes!",
     noContentFound: "No jokes found matching your search.",
+    aiGenerateTitle: "Generate Jokes with AI",
+    aiGenerateDescription: "Enter a keyword or theme (e.g., \"Animal\", \"Office\")",
+    aiKeywordTheme: "Keyword / Theme:",
+    aiPlaceholder: "e.g., Food, Computer...",
+    aiSelectLength: "Select Joke Length (Lines):",
+    aiGenerateButton: "Generate Joke",
+    aiGeneratingButton: "Generating...",
+    aiResultTitle: "AI Generated Joke:",
+    inputRequired: "Input Required",
+    inputRequiredDesc: "Please enter a keyword or theme.",
+    generationFailed: "Generation Failed",
+    generationFailedDesc: "Could not generate joke. Please try again.",
   },
   hi: {
     title: "चुटकुले",
     description: "हमारे चुटकुलों के संग्रह से अपनी गुदगुदी करें!",
     noContentFound: "आपकी खोज से मेल खाने वाला कोई चुटकुला नहीं मिला।",
+    aiGenerateTitle: "एआई के साथ चुटकुले उत्पन्न करें",
+    aiGenerateDescription: "कोई कीवर्ड या थीम दर्ज करें (जैसे, \"जानवर\", \"ऑफिस\")",
+    aiKeywordTheme: "कीवर्ड / थीम:",
+    aiPlaceholder: "उदा., खाना, कंप्यूटर...",
+    aiSelectLength: "चुटकुले की लंबाई चुनें (पंक्तियाँ):",
+    aiGenerateButton: "चुटकुला उत्पन्न करें",
+    aiGeneratingButton: "उत्पन्न हो रहा है...",
+    aiResultTitle: "एआई उत्पन्न चुटकुला:",
+    inputRequired: "इनपुट आवश्यक है",
+    inputRequiredDesc: "कृपया कोई कीवर्ड या विषय दर्ज करें।",
+    generationFailed: "उत्पन्न करने में विफल",
+    generationFailedDesc: "चुटकुला उत्पन्न नहीं किया जा सका। कृपया पुन: प्रयास करें।",
   }
 };
 
@@ -54,6 +87,13 @@ export default function JokesPage() {
   const [jokes, setJokes] = useState<ContentItem[]>([]);
   const [filteredJokes, setFilteredJokes] = useState<ContentItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const { toast } = useToast();
+
+  // AI Joke Generation State
+  const [aiJokePrompt, setAiJokePrompt] = useState('');
+  const [aiJokeLength, setAiJokeLength] = useState<number>(2); // Default length 2 lines
+  const [generatedJoke, setGeneratedJoke] = useState<ContentItem | null>(null);
+  const [isGeneratingJoke, setIsGeneratingJoke] = useState(false);
 
   useEffect(() => {
      const savedLang = localStorage.getItem('shayariSagaLang') as 'en' | 'hi' | null;
@@ -73,6 +113,7 @@ export default function JokesPage() {
     const currentJokes = mockJokes[language];
     setJokes(currentJokes);
     filterJokes(currentJokes, searchTerm);
+    setGeneratedJoke(null); // Clear previous AI joke on language change
   }, [language, searchTerm]);
 
   const filterJokes = (baseJokes: ContentItem[], term: string) => {
@@ -82,10 +123,62 @@ export default function JokesPage() {
     setFilteredJokes(filtered);
   };
 
+  // --- AI Joke Generation Handler ---
+  const handleGenerateJoke = async () => {
+    if (!aiJokePrompt.trim()) {
+      toast({
+        title: pageText[language].inputRequired,
+        description: pageText[language].inputRequiredDesc,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsGeneratingJoke(true);
+    setGeneratedJoke(null); // Clear previous result
+
+    try {
+       const currentLangForApi = localStorage.getItem('shayariSagaLang') as 'en' | 'hi' || 'en';
+       const input: GenerateContentInput = {
+        language: currentLangForApi,
+        type: 'joke', // Explicitly set type to joke
+        prompt: aiJokePrompt.trim(),
+        length: aiJokeLength, // Pass selected length
+      };
+      const result: GenerateContentOutput = await generateContent(input);
+
+      const newJokeItem: ContentItem = {
+        id: `ai-joke-${Date.now()}`,
+        type: 'joke',
+        text: result.generatedText,
+        category: 'ai-joke', // Mark as AI generated joke
+        lang: currentLangForApi,
+      };
+      setGeneratedJoke(newJokeItem);
+      toast({
+        title: language === 'en' ? 'Joke Generated!' : 'चुटकुला बन गया!',
+        description: language === 'en' ? 'Scroll down to see your AI-generated joke.' : 'अपना एआई-जनित चुटकुला देखने के लिए नीचे स्क्रॉल करें।',
+      });
+
+    } catch (error) {
+      console.error('AI Joke Generation Error:', error);
+      toast({
+        title: pageText[language].generationFailed,
+        description: pageText[language].generationFailedDesc,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsGeneratingJoke(false);
+    }
+  };
+  // --- End AI Joke Generation ---
+
+
   const currentText = pageText[language];
 
   return (
     <div className="flex flex-col items-center w-full space-y-8">
+      {/* Page Title and Description */}
       <motion.div
         key={language + "-jokes-title"}
         initial={{ opacity: 0, y: -20 }}
@@ -101,17 +194,106 @@ export default function JokesPage() {
         </p>
       </motion.div>
 
+      {/* --- AI Joke Generation Section --- */}
       <motion.div
-        key={language + "-jokes-search"}
+        key={language + "-ai-joke-gen"}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
         className="w-full max-w-2xl"
       >
-        {/* Simplified Search Filter - only search term for now */}
+        <Card className="border-primary shadow-md overflow-hidden">
+          <CardHeader className="bg-primary/10">
+            <CardTitle className={`text-xl font-semibold text-primary flex items-center gap-2 ${language === 'hi' ? 'font-hindi' : ''}`}>
+              <Wand2 className="h-5 w-5" />
+              {currentText.aiGenerateTitle}
+            </CardTitle>
+             <p className={`text-sm text-muted-foreground pt-1 ${language === 'hi' ? 'font-hindi' : ''}`}>
+               {currentText.aiGenerateDescription}
+             </p>
+          </CardHeader>
+          <CardContent className="p-4 space-y-4">
+            {/* Prompt Input */}
+            <div className="space-y-2">
+                <Label htmlFor="ai-joke-prompt" className={`text-sm font-medium ${language === 'hi' ? 'font-hindi' : ''}`}>
+                   {currentText.aiKeywordTheme}
+                </Label>
+                <Input
+                  id="ai-joke-prompt"
+                  value={aiJokePrompt}
+                  onChange={(e) => setAiJokePrompt(e.target.value)}
+                  placeholder={currentText.aiPlaceholder}
+                  className={language === 'hi' ? 'font-hindi placeholder:font-hindi' : ''}
+                  disabled={isGeneratingJoke}
+                />
+            </div>
+
+            {/* Joke Length Selection */}
+            <div className="space-y-2">
+                 <Label className={`text-sm font-medium ${language === 'hi' ? 'font-hindi' : ''}`}>
+                    {currentText.aiSelectLength}
+                 </Label>
+                 <RadioGroup
+                    defaultValue={String(aiJokeLength)}
+                    onValueChange={(value: string) => setAiJokeLength(parseInt(value, 10))}
+                    className="flex space-x-4"
+                    disabled={isGeneratingJoke}
+                  >
+                   {[2, 3, 4, 5].map(len => (
+                      <div key={len} className="flex items-center space-x-2">
+                        <RadioGroupItem value={String(len)} id={`joke-len-${len}`} />
+                        <Label htmlFor={`joke-len-${len}`}>{len}</Label>
+                      </div>
+                   ))}
+                 </RadioGroup>
+            </div>
+
+            {/* Generate Button */}
+            <Button onClick={handleGenerateJoke} disabled={isGeneratingJoke} className="w-full">
+              {isGeneratingJoke ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {currentText.aiGeneratingButton}
+                </>
+              ) : (
+                 <>
+                  <Wand2 className="mr-2 h-4 w-4" />
+                  {currentText.aiGenerateButton}
+                 </>
+              )}
+            </Button>
+
+            {/* Generated Joke Display */}
+            {generatedJoke && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                transition={{ duration: 0.5 }}
+                className="mt-4 pt-4 border-t border-border"
+              >
+                <h4 className={`font-semibold mb-2 ${language === 'hi' ? 'font-hindi' : ''}`}>
+                    {currentText.aiResultTitle}
+                </h4>
+                <ContentCard content={generatedJoke} language={generatedJoke.lang} />
+              </motion.div>
+            )}
+            </CardContent>
+        </Card>
+      </motion.div>
+      {/* --- End AI Joke Generation Section --- */}
+
+
+      {/* Search Filter for Existing Jokes */}
+      <motion.div
+        key={language + "-jokes-search"}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="w-full max-w-2xl"
+      >
          <SearchFilter
             language={language}
-            categories={[]} // No category filter needed for this specific page yet
+            categories={[]} // No category filter needed for existing jokes
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
             selectedCategory={'all'} // Not used here
@@ -119,11 +301,12 @@ export default function JokesPage() {
         />
       </motion.div>
 
+      {/* Display Existing Jokes */}
       <motion.div
         key={language + "-jokes-content"}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl"
       >
         {filteredJokes.length > 0 ? (
@@ -134,7 +317,7 @@ export default function JokesPage() {
           <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.4 }}
               className={`text-center col-span-full text-muted-foreground py-8 ${language === 'hi' ? 'font-hindi' : ''}`}>
             {currentText.noContentFound}
           </motion.p>
