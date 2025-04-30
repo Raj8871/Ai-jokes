@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Loader2, Wand2, Sparkles, Bot } from 'lucide-react'; // Added Sparkles, Bot
+import { Loader2, Wand2, Sparkles, Bot, Laugh, Smile } from 'lucide-react'; // Added Laugh, Smile
 import { useToast } from '@/hooks/use-toast';
 import { generateContent, type GenerateContentInput, type GenerateContentOutput } from '@/ai/flows/generate-content-flow';
 
@@ -116,7 +116,12 @@ export default function JokesPage() {
     setJokes(currentJokes);
     filterJokes(currentJokes, searchTerm);
     setGeneratedJoke(null); // Clear previous AI joke on language change
-  }, [language, searchTerm]);
+  }, [language]); // Removed searchTerm dependency to avoid clearing AI joke on search
+
+  // Separate effect for filtering based on search term
+   useEffect(() => {
+    filterJokes(jokes, searchTerm);
+   }, [searchTerm, jokes]);
 
   const filterJokes = (baseJokes: ContentItem[], term: string) => {
     const filtered = baseJokes.filter(joke =>
@@ -150,13 +155,13 @@ export default function JokesPage() {
       const result: GenerateContentOutput = await generateContent(input);
 
       const newJokeItem: ContentItem = {
-        id: `ai-joke-${Date.now()}`,
+        id: `ai-joke-${Date.now()}`, // Use timestamp for a unique ID
         type: 'joke',
         text: result.generatedText,
         category: 'ai-joke', // Mark as AI generated joke
         lang: currentLangForApi,
       };
-      setGeneratedJoke(newJokeItem);
+      setGeneratedJoke(newJokeItem); // Display the newly generated joke
       toast({
         title: language === 'en' ? 'Joke Generated!' : 'चुटकुला बन गया!',
         description: language === 'en' ? 'Scroll down to see your AI-generated joke.' : 'अपना एआई-जनित चुटकुला देखने के लिए नीचे स्क्रॉल करें।',
@@ -208,8 +213,8 @@ export default function JokesPage() {
           <CardHeader className="bg-primary/10">
             <CardTitle className={`text-xl font-semibold text-primary flex items-center gap-2 ${language === 'hi' ? 'font-hindi' : ''}`}>
               <Wand2 className="h-5 w-5" />
-              <Sparkles className="h-5 w-5 text-yellow-400" /> {/* Added Sparkles */}
-              <Bot className="h-5 w-5" /> {/* Added Bot */}
+              <Sparkles className="h-5 w-5 text-yellow-400" />
+              <Bot className="h-5 w-5" />
               {currentText.aiGenerateTitle}
             </CardTitle>
              <p className={`text-sm text-muted-foreground pt-1 ${language === 'hi' ? 'font-hindi' : ''}`}>
@@ -241,11 +246,11 @@ export default function JokesPage() {
                     defaultValue={String(aiJokeLength)}
                     onValueChange={(value: string) => setAiJokeLength(parseInt(value, 10))}
                     className="flex flex-wrap gap-x-4 gap-y-2" // Use flex-wrap for better spacing
-                    disabled={isGeneratingJoke}
+                    // Removed disabled prop, should be enabled
                   >
                    {possibleJokeLengths.map(len => (
                       <div key={len} className="flex items-center space-x-2">
-                        <RadioGroupItem value={String(len)} id={`joke-len-${len}`} />
+                        <RadioGroupItem value={String(len)} id={`joke-len-${len}`} disabled={isGeneratingJoke}/>
                         <Label htmlFor={`joke-len-${len}`}>{len}</Label>
                       </div>
                    ))}
@@ -262,8 +267,8 @@ export default function JokesPage() {
               ) : (
                  <>
                   <Wand2 className="mr-1 h-4 w-4" />
-                  <Sparkles className="mr-1 h-4 w-4 text-yellow-300" /> {/* Added Sparkles */}
-                  <Bot className="mr-2 h-4 w-4" /> {/* Added Bot */}
+                  <Sparkles className="mr-1 h-4 w-4 text-yellow-300" />
+                  <Bot className="mr-2 h-4 w-4" />
                   {currentText.aiGenerateButton}
                  </>
               )}
@@ -272,12 +277,15 @@ export default function JokesPage() {
             {/* Generated Joke Display */}
             {generatedJoke && (
               <motion.div
+                key={generatedJoke.id} // Use joke ID as key to force re-render on new joke
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 transition={{ duration: 0.5 }}
                 className="mt-4 pt-4 border-t border-border"
               >
-                <h4 className={`font-semibold mb-2 ${language === 'hi' ? 'font-hindi' : ''}`}>
+                <h4 className={`font-semibold mb-2 flex items-center gap-1 ${language === 'hi' ? 'font-hindi' : ''}`}>
+                    <Laugh className="h-4 w-4 text-yellow-500"/> {/* Added Laugh Icon */}
+                    <Smile className="h-4 w-4 text-green-500"/> {/* Added Smile Icon */}
                     {currentText.aiResultTitle}
                 </h4>
                 <ContentCard content={generatedJoke} language={generatedJoke.lang} />

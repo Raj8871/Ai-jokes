@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Copy, Heart, Share2, Loader2, Wand2, Languages, Lightbulb, Star, MessageSquareQuote, Sparkles, Bot } from 'lucide-react'; // Added Sparkles, Bot
+import { Copy, Heart, Share2, Loader2, Wand2, Languages, Lightbulb, Star, MessageSquareQuote, Sparkles, Bot } from 'lucide-react'; // Added Sparkles, Bot, Heart, MessageSquareQuote
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import DailyHighlight from '@/components/content/daily-highlight';
@@ -293,14 +293,14 @@ export default function Home() {
       const result: GenerateContentOutput = await generateContent(input);
 
       const newContentItem: ContentItem = {
-        id: `ai-${Date.now()}`,
+        id: `ai-${Date.now()}`, // Ensure unique ID
         type: aiContentType,
         text: result.generatedText,
         // Tag AI content differently - maybe use a more specific category?
         category: aiContentType === 'joke' ? 'ai-joke' : 'ai-shayari',
         lang: currentLangForApi, // Tag generated content with the language it was generated in
       };
-      setGeneratedContent(newContentItem);
+      setGeneratedContent(newContentItem); // Set the new content
 
     } catch (error) {
       console.error('AI Generation Error:', error);
@@ -470,8 +470,8 @@ export default function Home() {
           <CardHeader className="bg-primary/10">
             <CardTitle className={`text-xl font-semibold text-primary flex items-center gap-2 ${language === 'hi' ? 'font-hindi' : ''}`}>
               <Wand2 className="h-5 w-5" />
-              <Sparkles className="h-5 w-5 text-yellow-400" /> {/* Added Sparkles */}
-              <Bot className="h-5 w-5" /> {/* Added Bot */}
+              <Sparkles className="h-5 w-5 text-yellow-400" />
+              <Bot className="h-5 w-5" />
               {currentText.aiGenerateTitle}
             </CardTitle>
              <p className={`text-sm text-muted-foreground pt-1 ${language === 'hi' ? 'font-hindi' : ''}`}>
@@ -488,6 +488,7 @@ export default function Home() {
                     defaultValue={aiContentType}
                     onValueChange={(value: 'joke' | 'shayari') => setAiContentType(value)}
                     className="flex space-x-4"
+                    disabled={isGenerating}
                   >
                    <div className="flex items-center space-x-2">
                      <RadioGroupItem value="shayari" id="ai-shayari" />
@@ -542,8 +543,8 @@ export default function Home() {
               ) : (
                  <>
                   <Wand2 className="mr-1 h-4 w-4" />
-                  <Sparkles className="mr-1 h-4 w-4 text-yellow-300" /> {/* Added Sparkles */}
-                  <Bot className="mr-2 h-4 w-4" /> {/* Added Bot */}
+                  <Sparkles className="mr-1 h-4 w-4 text-yellow-300" />
+                  <Bot className="mr-2 h-4 w-4" />
                   {currentText.aiGenerateButton}
                  </>
               )}
@@ -552,12 +553,17 @@ export default function Home() {
             {/* Generated Content Display */}
             {generatedContent && (
               <motion.div
+                key={generatedContent.id} // Use content ID as key
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 transition={{ duration: 0.5 }}
                 className="mt-4 pt-4 border-t border-border"
               >
-                <h4 className={`font-semibold mb-2 ${language === 'hi' ? 'font-hindi' : ''}`}>
+                <h4 className={`font-semibold mb-2 flex items-center gap-1 ${language === 'hi' ? 'font-hindi' : ''}`}>
+                    {generatedContent.type === 'shayari' && <Heart className="h-4 w-4 text-red-500"/>}
+                    {generatedContent.type === 'shayari' && <MessageSquareQuote className="h-4 w-4 text-blue-400"/>}
+                    <Sparkles className="h-4 w-4 text-yellow-400"/>
+                    <Bot className="h-4 w-4 text-green-400"/>
                     {currentText.aiResultTitle}
                 </h4>
                 {/* Ensure generated content uses the correct language prop */}
