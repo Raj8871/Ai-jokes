@@ -25,10 +25,13 @@ const cardText = {
         shareApiSuccess: "Shared!",
         shareApiNotSupported: "Link Copied",
         shareApiNotSupportedDesc: "Sharing not supported, link copied instead.",
+        shareApiNotSupportedNonHttpsDesc: "Sharing via API failed (non-HTTPS). Link copied instead.",
         sharePermissionDeniedTitle: "Sharing Blocked",
         sharePermissionDeniedDesc: "Browser blocked sharing. Try copying the link.",
+        shareNotFoundErrorTitle: "Sharing Failed",
+        shareNotFoundErrorDesc: "Could not find a suitable app to share with. Link copied instead.",
         shareErrorTitle: "Error Sharing",
-        shareErrorDesc: "Could not share the content.",
+        shareErrorDesc: "Could not share the content. Link copied instead.",
         favoriteAdd: "Added to Favorites",
         favoriteRemove: "Removed from Favorites",
         copyLabel: "Copy",
@@ -44,10 +47,13 @@ const cardText = {
         shareApiSuccess: "शेयर किया गया!",
         shareApiNotSupported: "लिंक कॉपी किया गया",
         shareApiNotSupportedDesc: "शेयरिंग समर्थित नहीं है, इसके बजाय लिंक कॉपी किया गया।",
+        shareApiNotSupportedNonHttpsDesc: "API द्वारा शेयरिंग विफल (गैर-HTTPS)। इसके बजाय लिंक कॉपी किया गया।",
         sharePermissionDeniedTitle: "शेयरिंग अवरुद्ध",
         sharePermissionDeniedDesc: "ब्राउज़र ने शेयरिंग ब्लॉक कर दी है। लिंक कॉपी करने का प्रयास करें।",
+        shareNotFoundErrorTitle: "शेयरिंग विफल",
+        shareNotFoundErrorDesc: "शेयर करने के लिए कोई उपयुक्त ऐप नहीं मिला। इसके बजाय लिंक कॉपी किया गया।",
         shareErrorTitle: "शेयर करने में त्रुटि",
-        shareErrorDesc: "सामग्री शेयर नहीं की जा सकी।",
+        shareErrorDesc: "सामग्री शेयर नहीं की जा सकी। इसके बजाय लिंक कॉपी किया गया।",
         favoriteAdd: "पसंदीदा में जोड़ा गया",
         favoriteRemove: "पसंदीदा से हटाया गया",
         copyLabel: "कॉपी करें",
@@ -62,9 +68,10 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const favoriteStorageKey = `shayariSagaFavorite_${content.id}`;
   const currentText = cardText[language]; // Get UI text based on the language prop
+  const [isClient, setIsClient] = useState(false); // State to track client-side rendering
 
-  // Load favorite state from local storage on mount
   useEffect(() => {
+    setIsClient(true); // Set client to true after initial render
     const savedFavorite = localStorage.getItem(favoriteStorageKey);
     if (savedFavorite) {
       setIsFavorite(JSON.parse(savedFavorite));
@@ -75,24 +82,41 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
 
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(content.text)
-      .then(() => {
-        toast({
-          title: currentText.copiedTitle,
-          description: currentText.copiedDesc,
-        });
-      })
-      .catch(err => {
-        console.error('Failed to copy: ', err);
-        toast({
+    // Ensure navigator is available (client-side)
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        navigator.clipboard.writeText(content.text)
+          .then(() => {
+            toast({
+              title: currentText.copiedTitle,
+              description: currentText.copiedDesc,
+            });
+          })
+          .catch(err => {
+            console.error('Failed to copy: ', err);
+            toast({
+              title: currentText.copyErrorTitle,
+              description: currentText.copyErrorDesc,
+              variant: "destructive",
+            });
+          });
+    } else {
+        console.error('Clipboard API not available.');
+         toast({
           title: currentText.copyErrorTitle,
-          description: currentText.copyErrorDesc,
+          description: "Clipboard API not available in this environment.",
           variant: "destructive",
         });
-      });
+    }
   };
 
   const handleShare = async () => {
+     // Ensure this runs only on the client and navigator is available
+     if (!isClient || typeof navigator === 'undefined') {
+        console.warn("Share button clicked before client hydration or navigator is undefined.");
+        // Optionally show a message or just do nothing
+        return;
+     }
+
      const shareData = {
        title: currentText.shareTitle, // Use language-specific title
        text: content.text,
@@ -100,8 +124,21 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
      };
 
      try {
+        // Check for HTTPS, as navigator.share often requires it
+        if (!window.location.protocol.startsWith('https')) {
+            console.warn("Web Share API may require HTTPS.");
+            handleCopy(); // Fallback to copy directly if not HTTPS
+            toast({
+                title: currentText.shareApiNotSupported,
+                description: currentText.shareApiNotSupportedNonHttpsDesc,
+                variant: 'destructive' // Indicate it's not the ideal outcome
+            });
+            return; // Exit early
+        }
+
         if (navigator.share) {
              await navigator.share(shareData);
+             // Success toast is only shown if navigator.share resolves without error
              toast({
                  title: currentText.shareApiSuccess,
              });
@@ -114,33 +151,39 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
              });
         }
      } catch (err) {
-       console.error('Failed to share: ', err);
+       console.error('Failed to share: ', err); // Keep logging for debugging
        // Check error type/message
-       if (err instanceof DOMException && err.name === 'AbortError') {
-         // User cancelled the share operation, do nothing or show mild feedback
-         // console.log('Share cancelled by user.');
-       } else if (err instanceof DOMException && err.name === 'NotAllowedError') {
-           // Permission denied - often requires HTTPS or user gesture
-           handleCopy(); // Fallback to copy
-           toast({
-               title: currentText.sharePermissionDeniedTitle,
-               description: currentText.sharePermissionDeniedDesc,
-               variant: 'destructive',
-           });
-       } else {
-           // Other share errors
-           handleCopy(); // Fallback to copy for other errors too
-           toast({
-               title: currentText.shareErrorTitle,
-               description: currentText.shareErrorDesc,
-               variant: "destructive",
-           });
+       let errorTitle = currentText.shareErrorTitle;
+       let errorDesc = currentText.shareErrorDesc;
+
+       if (err instanceof DOMException) {
+            if (err.name === 'AbortError') {
+                // User cancelled the share operation, don't show an error toast
+                console.log('Share cancelled by user.');
+                return; // Exit without fallback or error toast
+            } else if (err.name === 'NotAllowedError') {
+                 // Permission denied - often requires HTTPS or user gesture
+                 errorTitle = currentText.sharePermissionDeniedTitle;
+                 errorDesc = currentText.sharePermissionDeniedDesc;
+            } else if (err.name === 'NotFoundError') {
+                // Can happen if the target app isn't available or share fails internally
+                errorTitle = currentText.shareNotFoundErrorTitle;
+                errorDesc = currentText.shareNotFoundErrorDesc;
+            }
        }
+       // Always fallback to copy for any error other than AbortError
+        handleCopy(); // Fallback to copy
+        toast({
+            title: errorTitle,
+            description: errorDesc,
+            variant: "destructive",
+        });
      }
    };
 
 
   const handleFavorite = () => {
+    if (!isClient) return; // Ensure client-side for localStorage
     const newFavoriteState = !isFavorite;
     setIsFavorite(newFavoriteState);
     localStorage.setItem(favoriteStorageKey, JSON.stringify(newFavoriteState));
@@ -180,17 +223,17 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
         </CardContent>
         <CardFooter className="p-2 border-t mt-auto flex justify-end space-x-1">
           <motion.div variants={buttonVariants} whileTap="tap" whileHover="hover">
-             <Button variant="ghost" size="icon" onClick={handleCopy} aria-label={currentText.copyLabel}>
+             <Button variant="ghost" size="icon" onClick={handleCopy} aria-label={currentText.copyLabel} disabled={!isClient}>
                 <Copy className="h-4 w-4" />
              </Button>
            </motion.div>
            <motion.div variants={buttonVariants} whileTap="tap" whileHover="hover">
-            <Button variant="ghost" size="icon" onClick={handleShare} aria-label={currentText.shareLabel}>
+            <Button variant="ghost" size="icon" onClick={handleShare} aria-label={currentText.shareLabel} disabled={!isClient}>
                 <Share2 className="h-4 w-4" />
             </Button>
            </motion.div>
            <motion.div variants={buttonVariants} whileTap="tap" whileHover="hover">
-            <Button variant="ghost" size="icon" onClick={handleFavorite} aria-label={currentText.favoriteLabel}>
+            <Button variant="ghost" size="icon" onClick={handleFavorite} aria-label={currentText.favoriteLabel} disabled={!isClient}>
                  <Heart className={`h-4 w-4 transition-all duration-200 ${isFavorite ? 'fill-destructive text-destructive scale-110' : 'text-muted-foreground group-hover:text-destructive'}`} />
             </Button>
            </motion.div>
