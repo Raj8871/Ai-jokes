@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Copy, Heart, Share2, Loader2, Wand2, Languages, Lightbulb, Star } from 'lucide-react'; // Added icons
+import { Copy, Heart, Share2, Loader2, Wand2, Languages, Lightbulb, Star, MessageSquareQuote } from 'lucide-react'; // Added MessageSquareQuote
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import DailyHighlight from '@/components/content/daily-highlight';
@@ -25,27 +25,36 @@ const mockContent = {
       { id: 'j3', type: 'joke', text: "I told my wife she was drawing her eyebrows too high. She looked surprised.", category: 'jokes', lang: 'en' },
       { id: 'j4', type: 'joke', text: "What do you call fake spaghetti? An impasta!", category: 'jokes', lang: 'en' },
       { id: 'j5', type: 'joke', text: "Why did the bicycle fall over? Because it was two tired!", category: 'jokes', lang: 'en' },
+      { id: 'j6', type: 'joke', text: "What do you call a lazy kangaroo? Pouch potato!", category: 'jokes', lang: 'en' },
+      { id: 'j7', type: 'joke', text: "Why don't eggs tell jokes? They'd crack each other up!", category: 'jokes', lang: 'en' },
+      { id: 'j8', type: 'joke', text: "What musical instrument is found in the bathroom? A tuba toothpaste!", category: 'jokes', lang: 'en' },
     ],
     romantic: [
       { id: 'r1', type: 'shayari', text: "In your eyes, a universe I see, a love story written, just for you and me.", category: 'romantic', lang: 'en' },
       { id: 'r2', type: 'shayari', text: "Like a gentle breeze, your love touches my soul, making my broken heart finally whole.", category: 'romantic', lang: 'en' },
       { id: 'r3', type: 'shayari', text: "With every beat, my heart calls your name, a love like ours, an eternal flame.", category: 'romantic', lang: 'en' },
       { id: 'r4', type: 'shayari', text: "Your smile is the sunrise that brightens my day, in your loving arms, I wish to forever stay.", category: 'romantic', lang: 'en' },
+      { id: 'r5', type: 'shayari', text: "If love is a journey, I'd walk miles with you, hand in hand, under skies ever blue.", category: 'romantic', lang: 'en' },
+      { id: 'r6', type: 'shayari', text: "The moon envies the sparkle in your gaze, lost in your love through all my days.", category: 'romantic', lang: 'en' },
     ],
     sad: [
       { id: 's1', type: 'shayari', text: "Tears fall like rain on a lonely night, remembering moments that once felt so right.", category: 'sad', lang: 'en' },
       { id: 's2', type: 'shayari', text: "The echoes of laughter now fade away, leaving silence in the light of day.", category: 'sad', lang: 'en' },
       { id: 's3', type: 'shayari', text: "A heart once full, now feels so bare, lost in the shadows of despair.", category: 'sad', lang: 'en' },
+      { id: 's4', type: 'shayari', text: "The path we walked together now diverges, leaving behind unspoken urges.", category: 'sad', lang: 'en' },
+      { id: 's5', type: 'shayari', text: "Empty rooms whisper your name, a constant reminder of the burning flame.", category: 'sad', lang: 'en' },
     ],
     friendship: [
        { id: 'f1', type: 'shayari', text: "A true friend is a treasure, rare and kind, a bond of souls, forever intertwined.", category: 'friendship', lang: 'en' },
        { id: 'f2', type: 'shayari', text: "Through thick and thin, you're always near, a friend like you dispels all fear.", category: 'friendship', lang: 'en' },
        { id: 'f3', type: 'shayari', text: "Miles may part us, but hearts remain close, a friendship like ours, beautifully grows.", category: 'friendship', lang: 'en' },
+       { id: 'f4', type: 'shayari', text: "Like stars in the sky, friends light up the dark, leaving a hopeful and lasting mark.", category: 'friendship', lang: 'en' },
     ],
     motivational: [
        { id: 'm1', type: 'shayari', text: "Though the path is steep, keep climbing high, your strength within will reach the sky.", category: 'motivational', lang: 'en' },
        { id: 'm2', type: 'shayari', text: "Every stumble is a lesson learned, rise again, let your spirit be returned.", category: 'motivational', lang: 'en' },
        { id: 'm3', type: 'shayari', text: "Believe in the power that lies within you, dreams can come true, start something new.", category: 'motivational', lang: 'en' },
+       { id: 'm4', type: 'shayari', text: "Let challenges shape you, don't let them break, resilience blooms with each step you take.", category: 'motivational', lang: 'en' },
     ]
   },
   hi: {
@@ -55,27 +64,36 @@ const mockContent = {
       { id: 'hj3', type: 'joke', text: "मैंने अपनी पत्नी से कहा कि वह अपनी भौहें बहुत ऊंची बना रही है। वह हैरान दिखी।", category: 'jokes', lang: 'hi' },
       { id: 'hj4', type: 'joke', text: "नकली स्पेगेटी को क्या कहते हैं? एक इम्पोस्टा!", category: 'jokes', lang: 'hi' },
       { id: 'hj5', type: 'joke', text: "साइकिल क्यों गिर गई? क्योंकि वह दो थकी हुई थी!", category: 'jokes', lang: 'hi' },
+      { id: 'hj6', type: 'joke', text: "आलसी कंगारू को क्या कहते हैं? थैली आलू!", category: 'jokes', lang: 'hi' },
+      { id: 'hj7', type: 'joke', text: "अंडे चुटकुले क्यों नहीं सुनाते? वे एक-दूसरे को हंसाएंगे!", category: 'jokes', lang: 'hi' },
+      { id: 'hj8', type: 'joke', text: "बाथरूम में कौन सा वाद्य यंत्र पाया जाता है? एक टूबा टूथपेस्ट!", category: 'jokes', lang: 'hi' },
     ],
     romantic: [
       { id: 'hr1', type: 'shayari', text: "तुम्हारी आँखों में, मैं एक ब्रह्मांड देखता हूँ, एक प्रेम कहानी लिखी है, सिर्फ तुम्हारे और मेरे लिए।", category: 'romantic', lang: 'hi' },
       { id: 'hr2', type: 'shayari', text: "एक हल्की हवा की तरह, तुम्हारा प्यार मेरी आत्मा को छूता है, मेरे टूटे हुए दिल को आखिरकार पूरा करता है।", category: 'romantic', lang: 'hi' },
       { id: 'hr3', type: 'shayari', text: "हर धड़कन के साथ, मेरा दिल तुम्हारा नाम पुकारता है, हमारे जैसा प्यार, एक शाश्वत ज्वाला।", category: 'romantic', lang: 'hi' },
       { id: 'hr4', type: 'shayari', text: "तुम्हारी मुस्कान वह सूर्योदय है जो मेरे दिन को रोशन करती है, तुम्हारी प्यारी बाहों में, मैं हमेशा रहना चाहता हूँ।", category: 'romantic', lang: 'hi' },
+      { id: 'hr5', type: 'shayari', text: "अगर प्यार एक सफ़र है, तो मैं तुम्हारे साथ मीलों चलूंगा, हाथ में हाथ डाले, हमेशा नीले आसमान के नीचे।", category: 'romantic', lang: 'hi' },
+      { id: 'hr6', type: 'shayari', text: "चाँद भी तुम्हारी निगाहों की चमक से जलता है, तुम्हारे प्यार में खोया हूँ अपने सारे दिनों में।", category: 'romantic', lang: 'hi' },
     ],
      sad: [
       { id: 'hs1', type: 'shayari', text: "आँसू बारिश की तरह गिरते हैं अकेली रात में, उन पलों को याद करते हुए जो कभी बहुत सही लगते थे।", category: 'sad', lang: 'hi' },
       { id: 'hs2', type: 'shayari', text: "हँसी की गूँज अब फीकी पड़ गई है, दिन के उजाले में खामोशी छोड़ गई है।", category: 'sad', lang: 'hi' },
       { id: 'hs3', type: 'shayari', text: "एक दिल जो कभी भरा हुआ था, अब कितना खाली महसूस होता है, निराशा की छाया में खो गया।", category: 'sad', lang: 'hi' },
+      { id: 'hs4', type: 'shayari', text: "जिस रास्ते पर हम साथ चले थे, वह अब अलग हो गया है, पीछे अनकही इच्छाएँ छोड़ गया है।", category: 'sad', lang: 'hi' },
+      { id: 'hs5', type: 'shayari', text: "खाली कमरे तुम्हारा नाम फुसफुसाते हैं, उस जलती हुई लौ की लगातार याद दिलाते हैं।", category: 'sad', lang: 'hi' },
     ],
     friendship: [
        { id: 'hf1', type: 'shayari', text: "एक सच्चा दोस्त एक खजाना है, दुर्लभ और दयालु, आत्माओं का बंधन, हमेशा के लिए जुड़ा हुआ।", category: 'friendship', lang: 'hi' },
        { id: 'hf2', type: 'shayari', text: "सुख-दुख में, तुम हमेशा पास हो, तुम्हारे जैसा दोस्त हर डर को दूर करता है।", category: 'friendship', lang: 'hi' },
        { id: 'hf3', type: 'shayari', text: "मील हमें अलग कर सकते हैं, लेकिन दिल करीब रहते हैं, हमारी जैसी दोस्ती, खूबसूरती से बढ़ती है।", category: 'friendship', lang: 'hi' },
+       { id: 'hf4', type: 'shayari', text: "आसमान में तारों की तरह, दोस्त अंधेरे को रोशन करते हैं, एक आशावादी और स्थायी छाप छोड़ते हैं।", category: 'friendship', lang: 'hi' },
     ],
     motivational: [
        { id: 'hm1', type: 'shayari', text: "भले ही रास्ता कठिन हो, ऊँचा चढ़ते रहो, तुम्हारी भीतर की ताकत आसमान तक पहुँच जाएगी।", category: 'motivational', lang: 'hi' },
        { id: 'hm2', type: 'shayari', text: "हर ठोकर एक सबक है, फिर से उठो, अपनी आत्मा को वापस लौटने दो।", category: 'motivational', lang: 'hi' },
        { id: 'hm3', type: 'shayari', text: "अपने भीतर की शक्ति पर विश्वास करो, सपने सच हो सकते हैं, कुछ नया शुरू करो।", category: 'motivational', lang: 'hi' },
+       { id: 'hm4', type: 'shayari', text: "चुनौतियों को तुम्हें आकार देने दो, उन्हें तुम्हें तोड़ने न दो, लचीलापन हर कदम के साथ खिलता है।", category: 'motivational', lang: 'hi' },
     ]
   }
 };
@@ -99,8 +117,8 @@ const categories: { key: Category; en: string; hi: string }[] = [
 ];
 
 const aiKeywordSuggestions = {
-  en: ["Love", "Friendship", "Motivation", "Breakup", "Funny Animals", "Work Life"],
-  hi: ["प्यार", "दोस्ती", "प्रेरणा", "ब्रेकअप", "मज़ेदार जानवर", "कामकाजी जीवन"]
+  en: ["Love", "Friendship", "Motivation", "Breakup", "Funny Animals", "Work Life", "College Days", "Tech Humor"],
+  hi: ["प्यार", "दोस्ती", "प्रेरणा", "ब्रेकअप", "मज़ेदार जानवर", "कामकाजी जीवन", "कॉलेज के दिन", "तकनीकी हास्य"]
 };
 
 // Text content for different languages
@@ -116,6 +134,8 @@ const pageText = {
     feature2Text: "Create new content instantly based on your themes.",
     feature3Title: "Save & Share",
     feature3Text: "Keep your favorites and easily share with friends.",
+    feature4Title: "Extensive Collection", // New Feature
+    feature4Text: "Browse through a growing library of user and AI content.", // New Feature
     aiGenerateTitle: "Generate with AI",
     aiGenerateDescription: "Enter a keyword or theme (e.g., \"Friendship\", \"Rainy Day\")",
     aiSelectType: "Select Type:",
@@ -133,6 +153,11 @@ const pageText = {
     inputRequiredDesc: "Please enter a keyword or theme.",
     generationFailed: "Generation Failed",
     generationFailedDesc: "Could not generate content. Please try again.",
+    moreContentInfo: "Explore thousands of user-submitted and AI-crafted pieces. New additions daily!", // New Info
+    howItWorksTitle: "How It Works", // New Section Title
+    howItWorks1: "Browse categories or search for specific themes.", // Step 1
+    howItWorks2: "Use the AI Generator to create unique jokes or shayari.", // Step 2
+    howItWorks3: "Save your favorites, copy, or share instantly!", // Step 3
   },
   hi: {
     welcome: "शायरी सागा में आपका स्वागत है!",
@@ -145,6 +170,8 @@ const pageText = {
     feature2Text: "अपने विषयों के आधार पर तुरंत नई सामग्री बनाएं।",
     feature3Title: "सहेजें और साझा करें",
     feature3Text: "अपने पसंदीदा रखें और दोस्तों के साथ आसानी से साझा करें।",
+    feature4Title: "विस्तृत संग्रह", // New Feature
+    feature4Text: "उपयोगकर्ता और एआई सामग्री की बढ़ती लाइब्रेरी ब्राउज़ करें।", // New Feature
     aiGenerateTitle: "एआई के साथ उत्पन्न करें",
     aiGenerateDescription: "कोई कीवर्ड या थीम दर्ज करें (जैसे, \"दोस्ती\", \"बरसात का दिन\")",
     aiSelectType: "प्रकार चुनें:",
@@ -162,6 +189,11 @@ const pageText = {
     inputRequiredDesc: "कृपया कोई कीवर्ड या विषय दर्ज करें।",
     generationFailed: "उत्पन्न करने में विफल",
     generationFailedDesc: "सामग्री उत्पन्न नहीं की जा सकी। कृपया पुन: प्रयास करें।",
+    moreContentInfo: "हजारों उपयोगकर्ता-प्रस्तुत और एआई-निर्मित रचनाओं का अन्वेषण करें। प्रतिदिन नई सामग्री!", // New Info
+    howItWorksTitle: "यह कैसे काम करता है", // New Section Title
+    howItWorks1: "श्रेणियाँ ब्राउज़ करें या विशिष्ट विषयों की खोज करें।", // Step 1
+    howItWorks2: "अद्वितीय चुटकुले या शायरी बनाने के लिए एआई जेनरेटर का उपयोग करें।", // Step 2
+    howItWorks3: "अपने पसंदीदा सहेजें, कॉपी करें, या तुरंत साझा करें!", // Step 3
   }
 };
 
@@ -188,7 +220,11 @@ export default function Home() {
      const savedLang = localStorage.getItem('shayariSagaLang') as 'en' | 'hi' | null;
      if (savedLang) {
        setLanguage(savedLang);
+     } else {
+        // Set default language if none is saved
+        localStorage.setItem('shayariSagaLang', language);
      }
+
      const handleLanguageChange = () => {
         const updatedLang = localStorage.getItem('shayariSagaLang') as 'en' | 'hi' | null;
         if (updatedLang) {
@@ -196,20 +232,20 @@ export default function Home() {
         }
      };
      window.addEventListener('languageChanged', handleLanguageChange);
-     const currentContent = mockContent[savedLang || 'en'];
-     setContent(currentContent);
-     setFilteredContent(currentContent); // Apply initial filtering
 
-     // Apply filters from initial state as well
-     filterContent(currentContent, searchTerm, selectedCategoryFilter);
+     // Load mock content based on the determined language
+     const currentContent = mockContent[savedLang || language];
+     setContent(currentContent);
+     filterContent(currentContent, searchTerm, selectedCategoryFilter); // Apply initial filtering
 
      return () => window.removeEventListener('languageChanged', handleLanguageChange);
   }, []); // Run only once on mount
 
 
-   // Refetch mock data and apply filters when language changes
+   // Refetch mock data and apply filters when language changes or filters are updated
    useEffect(() => {
-    const currentContent = mockContent[language];
+    const currentLang = localStorage.getItem('shayariSagaLang') as 'en' | 'hi' || 'en';
+    const currentContent = mockContent[currentLang];
     setContent(currentContent);
     filterContent(currentContent, searchTerm, selectedCategoryFilter); // Re-apply filters
     setGeneratedContent(null); // Clear previous AI generation
@@ -223,29 +259,28 @@ export default function Home() {
     currentCategoryFilter: Category | 'all'
    ) => {
     let tempFiltered = {} as Record<Category, ContentItem[]>;
+    const currentLang = localStorage.getItem('shayariSagaLang') as 'en' | 'hi' || 'en'; // Get current language
 
     categories.forEach(({ key }) => {
-      tempFiltered[key] = baseContent[key]?.filter(item => {
+      // Check if baseContent exists and has the key, provide empty array if not
+      const categoryContent = baseContent && baseContent[key] ? baseContent[key] : [];
+
+      tempFiltered[key] = categoryContent.filter(item => {
         const matchesSearch = item.text.toLowerCase().includes(currentSearchTerm.toLowerCase());
         const matchesCategory = currentCategoryFilter === 'all' || item.category === currentCategoryFilter;
-        // Ensure item language matches current language, OR if it's AI generated (allow showing it regardless of language setting? TBD)
-        // For now, strictly filter by language:
-        const matchesLanguage = item.lang === language;
+        const matchesLanguage = item.lang === currentLang; // Filter strictly by CURRENT UI language
         return matchesSearch && matchesCategory && matchesLanguage;
-      }) || [];
+      });
     });
     setFilteredContent(tempFiltered);
   };
 
-   // Trigger filtering when search term or category changes
-   // This useEffect is now combined with the language change useEffect above
-
-
+   // Handle language toggle
   const handleLanguageToggle = () => {
     const newLang = language === 'en' ? 'hi' : 'en';
-    setLanguage(newLang);
     localStorage.setItem('shayariSagaLang', newLang);
-    window.dispatchEvent(new Event('languageChanged'));
+    setLanguage(newLang); // Update state immediately
+    window.dispatchEvent(new Event('languageChanged')); // Notify other components if needed
   };
 
 
@@ -264,8 +299,10 @@ export default function Home() {
     setGeneratedContent(null); // Clear previous result
 
     try {
-      const input: GenerateContentInput = {
-        language,
+       // Get language from localStorage directly for the API call
+       const currentLangForApi = localStorage.getItem('shayariSagaLang') as 'en' | 'hi' || 'en';
+       const input: GenerateContentInput = {
+        language: currentLangForApi,
         type: aiContentType,
         prompt: aiPrompt.trim(),
       };
@@ -276,7 +313,7 @@ export default function Home() {
         type: aiContentType,
         text: result.generatedText,
         category: 'ai-generated',
-        lang: language, // Generated content is in the current language
+        lang: currentLangForApi, // Tag generated content with the language it was generated in
       };
       setGeneratedContent(newContentItem);
 
@@ -301,11 +338,11 @@ export default function Home() {
   const currentText = pageText[language]; // Get text based on current language
 
   return (
-    <div className="flex flex-col items-center w-full space-y-12 md:space-y-16"> {/* Increased spacing */}
+    <div className="flex flex-col items-center w-full space-y-12 md:space-y-16">
 
       {/* Animated Welcome Message */}
       <motion.h1
-        key={language + "-welcome"} // Ensure re-animation on language change
+        key={language + "-welcome"}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -328,20 +365,24 @@ export default function Home() {
             <p className={`text-muted-foreground md:text-lg ${language === 'hi' ? 'font-hindi' : ''}`}>
                 {currentText.aboutText}
             </p>
+             <p className={`text-sm text-muted-foreground italic ${language === 'hi' ? 'font-hindi' : ''}`}>
+               {currentText.moreContentInfo} {/* Added more info text */}
+             </p>
         </motion.section>
 
-      {/* Key Features Section */}
+
+      {/* Key Features Section - Now includes 4 features */}
         <motion.section
           key={language + "-features"}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="w-full max-w-4xl"
+          className="w-full max-w-5xl" // Increased max-width for 4 columns
         >
             <h2 className={`text-2xl md:text-3xl font-semibold text-center mb-6 md:mb-8 ${language === 'hi' ? 'font-hindi' : ''}`}>
                 {currentText.featuresTitle}
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"> {/* Adjusted grid columns */}
                 {/* Feature 1 */}
                  <motion.div whileHover={{ scale: 1.05 }} transition={{ type: 'spring', stiffness: 300 }}>
                     <Card className="text-center p-6 h-full border-secondary hover:border-primary transition-colors duration-300">
@@ -384,8 +425,50 @@ export default function Home() {
                         </CardContent>
                     </Card>
                  </motion.div>
+                  {/* Feature 4 (New) */}
+                 <motion.div whileHover={{ scale: 1.05 }} transition={{ type: 'spring', stiffness: 300 }}>
+                    <Card className="text-center p-6 h-full border-secondary hover:border-primary transition-colors duration-300">
+                        <CardHeader className="p-0 mb-3">
+                             <div className="mx-auto bg-primary/10 rounded-full p-3 w-fit">
+                                <MessageSquareQuote className="h-8 w-8 text-primary" /> {/* New Icon */}
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-0 space-y-1">
+                            <h3 className={`text-lg font-semibold ${language === 'hi' ? 'font-hindi' : ''}`}>{currentText.feature4Title}</h3>
+                            <p className={`text-sm text-muted-foreground ${language === 'hi' ? 'font-hindi' : ''}`}>{currentText.feature4Text}</p>
+                        </CardContent>
+                    </Card>
+                 </motion.div>
             </div>
         </motion.section>
+
+         {/* How It Works Section */}
+        <motion.section
+          key={language + "-how-it-works"}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="w-full max-w-3xl text-center space-y-6"
+        >
+            <h2 className={`text-2xl md:text-3xl font-semibold ${language === 'hi' ? 'font-hindi' : ''}`}>
+                {currentText.howItWorksTitle}
+            </h2>
+            <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 text-muted-foreground">
+                <motion.div initial={{opacity: 0, x: -20}} animate={{opacity: 1, x: 0}} transition={{delay: 0.4}} className={`flex items-center gap-2 ${language === 'hi' ? 'font-hindi' : ''}`}>
+                    <span className="flex items-center justify-center h-8 w-8 rounded-full bg-primary text-primary-foreground font-bold">1</span>
+                    <span>{currentText.howItWorks1}</span>
+                </motion.div>
+                 <motion.div initial={{opacity: 0, x: -20}} animate={{opacity: 1, x: 0}} transition={{delay: 0.5}} className={`flex items-center gap-2 ${language === 'hi' ? 'font-hindi' : ''}`}>
+                     <span className="flex items-center justify-center h-8 w-8 rounded-full bg-primary text-primary-foreground font-bold">2</span>
+                    <span>{currentText.howItWorks2}</span>
+                </motion.div>
+                <motion.div initial={{opacity: 0, x: -20}} animate={{opacity: 1, x: 0}} transition={{delay: 0.6}} className={`flex items-center gap-2 ${language === 'hi' ? 'font-hindi' : ''}`}>
+                    <span className="flex items-center justify-center h-8 w-8 rounded-full bg-primary text-primary-foreground font-bold">3</span>
+                    <span>{currentText.howItWorks3}</span>
+                </motion.div>
+            </div>
+        </motion.section>
+
 
       {/* Daily Highlight */}
       <DailyHighlight language={language} />
@@ -395,10 +478,10 @@ export default function Home() {
         key={language + "-ai-gen"}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.5 }} // Delay adjusted
+        transition={{ duration: 0.5, delay: 0.5 }}
         className="w-full max-w-2xl"
       >
-        <Card className="border-primary shadow-lg overflow-hidden"> {/* Increased shadow */}
+        <Card className="border-primary shadow-lg overflow-hidden">
           <CardHeader className="bg-primary/10">
             <CardTitle className={`text-xl font-semibold text-primary flex items-center gap-2 ${language === 'hi' ? 'font-hindi' : ''}`}>
               <Wand2 className="h-5 w-5" />
@@ -503,8 +586,8 @@ export default function Home() {
             key={language + "-search-filter"}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }} // Delay adjusted
-            className="w-full max-w-4xl space-y-4" // Added more spacing
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="w-full max-w-4xl space-y-4"
         >
             <h2 className={`text-2xl md:text-3xl font-semibold text-center ${language === 'hi' ? 'font-hindi' : ''}`}>
                 {currentText.browseTitle}
@@ -525,7 +608,7 @@ export default function Home() {
         <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
           {categories.map(cat => (
             <TabsTrigger
-                key={cat.key + "-" + language} // Ensure key changes with language
+                key={cat.key + "-" + language}
                 value={cat.key}
                 className={language === 'hi' ? 'font-hindi' : ''}
                 asChild
@@ -549,9 +632,9 @@ export default function Home() {
               transition={{ duration: 0.5 }}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6"
             >
-              {filteredContent[cat.key] && filteredContent[cat.key].length > 0 ? (
+              {/* Check if filteredContent exists and has the category key */}
+              {filteredContent && filteredContent[cat.key] && filteredContent[cat.key].length > 0 ? (
                  filteredContent[cat.key].map(item => (
-                     // Pass the correct language prop to ContentCard based on the item's language
                     <ContentCard key={item.id} content={item} language={item.lang} />
                  ))
               ) : (
