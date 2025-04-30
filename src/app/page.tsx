@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Copy, Heart, Share2, Loader2, Wand2, Languages, Lightbulb, Star, MessageSquareQuote } from 'lucide-react'; // Added MessageSquareQuote
+import { Copy, Heart, Share2, Loader2, Wand2, Languages, Lightbulb, Star, MessageSquareQuote, Sparkles, Bot } from 'lucide-react'; // Added Sparkles, Bot
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import DailyHighlight from '@/components/content/daily-highlight';
@@ -470,6 +470,8 @@ export default function Home() {
           <CardHeader className="bg-primary/10">
             <CardTitle className={`text-xl font-semibold text-primary flex items-center gap-2 ${language === 'hi' ? 'font-hindi' : ''}`}>
               <Wand2 className="h-5 w-5" />
+              <Sparkles className="h-5 w-5 text-yellow-400" /> {/* Added Sparkles */}
+              <Bot className="h-5 w-5" /> {/* Added Bot */}
               {currentText.aiGenerateTitle}
             </CardTitle>
              <p className={`text-sm text-muted-foreground pt-1 ${language === 'hi' ? 'font-hindi' : ''}`}>
@@ -539,7 +541,9 @@ export default function Home() {
                 </>
               ) : (
                  <>
-                  <Wand2 className="mr-2 h-4 w-4" />
+                  <Wand2 className="mr-1 h-4 w-4" />
+                  <Sparkles className="mr-1 h-4 w-4 text-yellow-300" /> {/* Added Sparkles */}
+                  <Bot className="mr-2 h-4 w-4" /> {/* Added Bot */}
                   {currentText.aiGenerateButton}
                  </>
               )}

@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Loader2, Wand2 } from 'lucide-react';
+import { Loader2, Wand2, Sparkles, Bot } from 'lucide-react'; // Added Sparkles, Bot
 import { useToast } from '@/hooks/use-toast';
 import { generateContent, type GenerateContentInput, type GenerateContentOutput } from '@/ai/flows/generate-content-flow';
 
@@ -208,6 +208,8 @@ export default function JokesPage() {
           <CardHeader className="bg-primary/10">
             <CardTitle className={`text-xl font-semibold text-primary flex items-center gap-2 ${language === 'hi' ? 'font-hindi' : ''}`}>
               <Wand2 className="h-5 w-5" />
+              <Sparkles className="h-5 w-5 text-yellow-400" /> {/* Added Sparkles */}
+              <Bot className="h-5 w-5" /> {/* Added Bot */}
               {currentText.aiGenerateTitle}
             </CardTitle>
              <p className={`text-sm text-muted-foreground pt-1 ${language === 'hi' ? 'font-hindi' : ''}`}>
@@ -259,7 +261,9 @@ export default function JokesPage() {
                 </>
               ) : (
                  <>
-                  <Wand2 className="mr-2 h-4 w-4" />
+                  <Wand2 className="mr-1 h-4 w-4" />
+                  <Sparkles className="mr-1 h-4 w-4 text-yellow-300" /> {/* Added Sparkles */}
+                  <Bot className="mr-2 h-4 w-4" /> {/* Added Bot */}
                   {currentText.aiGenerateButton}
                  </>
               )}
