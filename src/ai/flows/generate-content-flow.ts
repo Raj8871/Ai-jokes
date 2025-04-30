@@ -14,7 +14,7 @@ const GenerateContentInputSchema = z.object({
   language: z.enum(['en', 'hi']).describe('The language for the generated content (English or Hindi).'),
   type: z.enum(['joke', 'shayari']).describe('The type of content to generate (joke or Shayari).'),
   prompt: z.string().describe('The category, keyword, or theme for the content.'),
-  length: z.number().min(2).max(5).optional().describe('The desired number of lines for the joke (2-5). Only applicable if type is "joke".'),
+  length: z.number().min(2).max(10).optional().describe('The desired number of lines for the joke (2-10). Only applicable if type is "joke".'), // Updated max length to 10
 });
 export type GenerateContentInput = z.infer<typeof GenerateContentInputSchema>;
 
@@ -41,11 +41,22 @@ const generateContentPrompt = ai.definePrompt(
         - Example for Hindi Shayari on "love": तुम्हारी आँखों में खो गया हूँ, ये कैसी मोहब्बत हो गयी है।
         - Example for English Joke on "cat": Why are cats such bad poker players? They always have a fur ace up their sleeve!
         - Example for English 2-line joke on "dog": What do you call a dog magician? A labracadabrador. It's a ruff trick!
+        - Example for English 10-line joke on "computer":
+            Why did the computer keep sneezing?
+            It had a virus!
+            Not just any virus, mind you,
+            A particularly nasty one.
+            It messed up the hard drive,
+            Corrupted the files, you see.
+            The firewall tried its best,
+            But the malware slipped right through.
+            So the computer just sat there,
+            Blessing itself, "Achoo!"
         `,
         // Example config (optional, adjust as needed)
         config: {
          temperature: 0.8, // Higher temperature for more creative responses
-         maxOutputTokens: 150,
+         maxOutputTokens: 250, // Increased token limit slightly for potentially longer jokes
         },
     }
 );
@@ -59,7 +70,10 @@ const generateContentFlow = ai.defineFlow(
     outputSchema: GenerateContentOutputSchema,
   },
   async (input) => {
-    const llmResponse = await generateContentPrompt(input);
+    // Only pass length if type is joke
+    const apiInput = input.type === 'joke' ? input : { ...input, length: undefined };
+
+    const llmResponse = await generateContentPrompt(apiInput);
     const output = llmResponse.output;
 
     if (!output?.generatedText) {

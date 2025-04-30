@@ -82,6 +82,8 @@ const pageText = {
   }
 };
 
+const possibleJokeLengths = Array.from({ length: 9 }, (_, i) => i + 2); // Generates [2, 3, ..., 10]
+
 export default function JokesPage() {
   const [language, setLanguage] = useState<'en' | 'hi'>('en');
   const [jokes, setJokes] = useState<ContentItem[]>([]);
@@ -236,10 +238,10 @@ export default function JokesPage() {
                  <RadioGroup
                     defaultValue={String(aiJokeLength)}
                     onValueChange={(value: string) => setAiJokeLength(parseInt(value, 10))}
-                    className="flex space-x-4"
+                    className="flex flex-wrap gap-x-4 gap-y-2" // Use flex-wrap for better spacing
                     disabled={isGeneratingJoke}
                   >
-                   {[2, 3, 4, 5].map(len => (
+                   {possibleJokeLengths.map(len => (
                       <div key={len} className="flex items-center space-x-2">
                         <RadioGroupItem value={String(len)} id={`joke-len-${len}`} />
                         <Label htmlFor={`joke-len-${len}`}>{len}</Label>
