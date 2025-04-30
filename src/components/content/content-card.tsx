@@ -25,6 +25,8 @@ const cardText = {
         shareApiSuccess: "Shared!",
         shareApiNotSupported: "Link Copied",
         shareApiNotSupportedDesc: "Sharing not supported, link copied instead.",
+        sharePermissionDeniedTitle: "Sharing Blocked",
+        sharePermissionDeniedDesc: "Browser blocked sharing. Try copying the link.",
         shareErrorTitle: "Error Sharing",
         shareErrorDesc: "Could not share the content.",
         favoriteAdd: "Added to Favorites",
@@ -42,6 +44,8 @@ const cardText = {
         shareApiSuccess: "शेयर किया गया!",
         shareApiNotSupported: "लिंक कॉपी किया गया",
         shareApiNotSupportedDesc: "शेयरिंग समर्थित नहीं है, इसके बजाय लिंक कॉपी किया गया।",
+        sharePermissionDeniedTitle: "शेयरिंग अवरुद्ध",
+        sharePermissionDeniedDesc: "ब्राउज़र ने शेयरिंग ब्लॉक कर दी है। लिंक कॉपी करने का प्रयास करें।",
         shareErrorTitle: "शेयर करने में त्रुटि",
         shareErrorDesc: "सामग्री शेयर नहीं की जा सकी।",
         favoriteAdd: "पसंदीदा में जोड़ा गया",
@@ -102,7 +106,8 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
                  title: currentText.shareApiSuccess,
              });
         } else {
-             handleCopy(); // Fallback to copy
+             // Fallback if navigator.share doesn't exist
+             handleCopy();
              toast({
                  title: currentText.shareApiNotSupported,
                  description: currentText.shareApiNotSupportedDesc,
@@ -110,13 +115,26 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
         }
      } catch (err) {
        console.error('Failed to share: ', err);
-       // Avoid showing error toast if the user simply cancels the share dialog
-       if (err instanceof Error && !err.message.toLowerCase().includes('abort')) {
-             toast({
-                 title: currentText.shareErrorTitle,
-                 description: currentText.shareErrorDesc,
-                 variant: "destructive",
-             });
+       // Check error type/message
+       if (err instanceof DOMException && err.name === 'AbortError') {
+         // User cancelled the share operation, do nothing or show mild feedback
+         // console.log('Share cancelled by user.');
+       } else if (err instanceof DOMException && err.name === 'NotAllowedError') {
+           // Permission denied - often requires HTTPS or user gesture
+           handleCopy(); // Fallback to copy
+           toast({
+               title: currentText.sharePermissionDeniedTitle,
+               description: currentText.sharePermissionDeniedDesc,
+               variant: 'destructive',
+           });
+       } else {
+           // Other share errors
+           handleCopy(); // Fallback to copy for other errors too
+           toast({
+               title: currentText.shareErrorTitle,
+               description: currentText.shareErrorDesc,
+               variant: "destructive",
+           });
        }
      }
    };
