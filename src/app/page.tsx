@@ -22,38 +22,60 @@ const mockContent = {
     jokes: [
       { id: 'j1', type: 'joke', text: "Why don't scientists trust atoms? Because they make up everything!", category: 'jokes', lang: 'en' },
       { id: 'j2', type: 'joke', text: "Why did the scarecrow win an award? Because he was outstanding in his field!", category: 'jokes', lang: 'en' },
+      { id: 'j3', type: 'joke', text: "I told my wife she was drawing her eyebrows too high. She looked surprised.", category: 'jokes', lang: 'en' },
+      { id: 'j4', type: 'joke', text: "What do you call fake spaghetti? An impasta!", category: 'jokes', lang: 'en' },
+      { id: 'j5', type: 'joke', text: "Why did the bicycle fall over? Because it was two tired!", category: 'jokes', lang: 'en' },
     ],
     romantic: [
       { id: 'r1', type: 'shayari', text: "In your eyes, a universe I see, a love story written, just for you and me.", category: 'romantic', lang: 'en' },
       { id: 'r2', type: 'shayari', text: "Like a gentle breeze, your love touches my soul, making my broken heart finally whole.", category: 'romantic', lang: 'en' },
+      { id: 'r3', type: 'shayari', text: "With every beat, my heart calls your name, a love like ours, an eternal flame.", category: 'romantic', lang: 'en' },
+      { id: 'r4', type: 'shayari', text: "Your smile is the sunrise that brightens my day, in your loving arms, I wish to forever stay.", category: 'romantic', lang: 'en' },
     ],
     sad: [
       { id: 's1', type: 'shayari', text: "Tears fall like rain on a lonely night, remembering moments that once felt so right.", category: 'sad', lang: 'en' },
+      { id: 's2', type: 'shayari', text: "The echoes of laughter now fade away, leaving silence in the light of day.", category: 'sad', lang: 'en' },
+      { id: 's3', type: 'shayari', text: "A heart once full, now feels so bare, lost in the shadows of despair.", category: 'sad', lang: 'en' },
     ],
     friendship: [
        { id: 'f1', type: 'shayari', text: "A true friend is a treasure, rare and kind, a bond of souls, forever intertwined.", category: 'friendship', lang: 'en' },
+       { id: 'f2', type: 'shayari', text: "Through thick and thin, you're always near, a friend like you dispels all fear.", category: 'friendship', lang: 'en' },
+       { id: 'f3', type: 'shayari', text: "Miles may part us, but hearts remain close, a friendship like ours, beautifully grows.", category: 'friendship', lang: 'en' },
     ],
     motivational: [
        { id: 'm1', type: 'shayari', text: "Though the path is steep, keep climbing high, your strength within will reach the sky.", category: 'motivational', lang: 'en' },
+       { id: 'm2', type: 'shayari', text: "Every stumble is a lesson learned, rise again, let your spirit be returned.", category: 'motivational', lang: 'en' },
+       { id: 'm3', type: 'shayari', text: "Believe in the power that lies within you, dreams can come true, start something new.", category: 'motivational', lang: 'en' },
     ]
   },
   hi: {
     jokes: [
       { id: 'hj1', type: 'joke', text: "वैज्ञानिक परमाणुओं पर भरोसा क्यों नहीं करते? क्योंकि वे सब कुछ बनाते हैं!", category: 'jokes', lang: 'hi' },
       { id: 'hj2', type: 'joke', text: "बिजूका ने पुरस्कार क्यों जीता? क्योंकि वह अपने क्षेत्र में उत्कृष्ट था!", category: 'jokes', lang: 'hi' },
+      { id: 'hj3', type: 'joke', text: "मैंने अपनी पत्नी से कहा कि वह अपनी भौहें बहुत ऊंची बना रही है। वह हैरान दिखी।", category: 'jokes', lang: 'hi' },
+      { id: 'hj4', type: 'joke', text: "नकली स्पेगेटी को क्या कहते हैं? एक इम्पोस्टा!", category: 'jokes', lang: 'hi' },
+      { id: 'hj5', type: 'joke', text: "साइकिल क्यों गिर गई? क्योंकि वह दो थकी हुई थी!", category: 'jokes', lang: 'hi' },
     ],
     romantic: [
       { id: 'hr1', type: 'shayari', text: "तुम्हारी आँखों में, मैं एक ब्रह्मांड देखता हूँ, एक प्रेम कहानी लिखी है, सिर्फ तुम्हारे और मेरे लिए।", category: 'romantic', lang: 'hi' },
       { id: 'hr2', type: 'shayari', text: "एक हल्की हवा की तरह, तुम्हारा प्यार मेरी आत्मा को छूता है, मेरे टूटे हुए दिल को आखिरकार पूरा करता है।", category: 'romantic', lang: 'hi' },
+      { id: 'hr3', type: 'shayari', text: "हर धड़कन के साथ, मेरा दिल तुम्हारा नाम पुकारता है, हमारे जैसा प्यार, एक शाश्वत ज्वाला।", category: 'romantic', lang: 'hi' },
+      { id: 'hr4', type: 'shayari', text: "तुम्हारी मुस्कान वह सूर्योदय है जो मेरे दिन को रोशन करती है, तुम्हारी प्यारी बाहों में, मैं हमेशा रहना चाहता हूँ।", category: 'romantic', lang: 'hi' },
     ],
      sad: [
       { id: 'hs1', type: 'shayari', text: "आँसू बारिश की तरह गिरते हैं अकेली रात में, उन पलों को याद करते हुए जो कभी बहुत सही लगते थे।", category: 'sad', lang: 'hi' },
+      { id: 'hs2', type: 'shayari', text: "हँसी की गूँज अब फीकी पड़ गई है, दिन के उजाले में खामोशी छोड़ गई है।", category: 'sad', lang: 'hi' },
+      { id: 'hs3', type: 'shayari', text: "एक दिल जो कभी भरा हुआ था, अब कितना खाली महसूस होता है, निराशा की छाया में खो गया।", category: 'sad', lang: 'hi' },
     ],
     friendship: [
        { id: 'hf1', type: 'shayari', text: "एक सच्चा दोस्त एक खजाना है, दुर्लभ और दयालु, आत्माओं का बंधन, हमेशा के लिए जुड़ा हुआ।", category: 'friendship', lang: 'hi' },
+       { id: 'hf2', type: 'shayari', text: "सुख-दुख में, तुम हमेशा पास हो, तुम्हारे जैसा दोस्त हर डर को दूर करता है।", category: 'friendship', lang: 'hi' },
+       { id: 'hf3', type: 'shayari', text: "मील हमें अलग कर सकते हैं, लेकिन दिल करीब रहते हैं, हमारी जैसी दोस्ती, खूबसूरती से बढ़ती है।", category: 'friendship', lang: 'hi' },
     ],
     motivational: [
        { id: 'hm1', type: 'shayari', text: "भले ही रास्ता कठिन हो, ऊँचा चढ़ते रहो, तुम्हारी भीतर की ताकत आसमान तक पहुँच जाएगी।", category: 'motivational', lang: 'hi' },
+       { id: 'hm2', type: 'shayari', text: "हर ठोकर एक सबक है, फिर से उठो, अपनी आत्मा को वापस लौटने दो।", category: 'motivational', lang: 'hi' },
+       { id: 'hm3', type: 'shayari', text: "अपने भीतर की शक्ति पर विश्वास करो, सपने सच हो सकते हैं, कुछ नया शुरू करो।", category: 'motivational', lang: 'hi' },
     ]
   }
 };
