@@ -107,18 +107,18 @@ const pageText = {
   en: {
     welcome: "Welcome to ShayariSaga!",
     aboutTitle: "Discover, Generate, Share",
-    aboutText: "Your ultimate destination for beautiful Shayari in both English and Hindi. Explore our curated collection, or let our AI generate unique content just for you!", // Removed mention of jokes here
+    aboutText: "Your ultimate destination for beautiful Shayari in both English and Hindi. Explore our curated collection, or let our AI generate unique content (with emojis!) just for you!", // Updated text
     featuresTitle: "Key Features",
     feature1Title: "Bilingual Content",
-    feature1Text: "Enjoy Shayari & Jokes in both English and Hindi.", // Added Jokes back
+    feature1Text: "Enjoy Shayari & Jokes in both English and Hindi.",
     feature2Title: "AI Generation",
-    feature2Text: "Create new Shayari or Jokes instantly based on your themes.", // Added Jokes back
+    feature2Text: "Create new Shayari or Jokes with emojis instantly based on your themes.", // Updated text
     feature3Title: "Save & Share",
     feature3Text: "Keep your favorites and easily share with friends.",
     feature4Title: "Extensive Collection", // New Feature
     feature4Text: "Browse through a growing library of user and AI content.", // New Feature
-    aiGenerateTitle: "Generate with AI",
-    aiGenerateDescription: "Enter a keyword or theme (e.g., \"Friendship\", \"Rainy Day\")",
+    aiGenerateTitle: "Generate with AI ✨", // Added emoji
+    aiGenerateDescription: "Enter a keyword or theme (e.g., \"Friendship\", \"Rainy Day\") and get content with emojis!", // Updated text
     aiSelectType: "Select Type:",
     aiShayari: "Shayari",
     aiJoke: "Joke",
@@ -139,24 +139,24 @@ const pageText = {
     moreContentInfo: "Explore thousands of user-submitted and AI-crafted pieces. New additions daily!", // New Info
     howItWorksTitle: "How It Works", // New Section Title
     howItWorks1: "Browse categories or search for specific themes.", // Step 1
-    howItWorks2: "Use the AI Generator to create unique jokes or shayari.", // Step 2
+    howItWorks2: "Use the AI Generator to create unique jokes or shayari with emojis.", // Updated text
     howItWorks3: "Save your favorites, copy, or share instantly!", // Step 3
   },
   hi: {
     welcome: "शायरी सागा में आपका स्वागत है!",
     aboutTitle: "खोजें, उत्पन्न करें, साझा करें",
-    aboutText: "अंग्रेजी और हिंदी दोनों में सुंदर शायरी के लिए आपका अंतिम गंतव्य। हमारे क्यूरेटेड संग्रह का अन्वेषण करें, या हमारे एआई को केवल आपके लिए अद्वितीय सामग्री उत्पन्न करने दें!", // Removed mention of jokes here
+    aboutText: "अंग्रेजी और हिंदी दोनों में सुंदर शायरी के लिए आपका अंतिम गंतव्य। हमारे क्यूरेटेड संग्रह का अन्वेषण करें, या हमारे एआई को केवल आपके लिए अद्वितीय सामग्री (इमोजी के साथ!) उत्पन्न करने दें!", // Updated text
     featuresTitle: "मुख्य विशेषताएं",
     feature1Title: "द्विभाषी सामग्री",
-    feature1Text: "अंग्रेजी और हिंदी दोनों में शायरी और चुटकुलों का आनंद लें।", // Added Jokes back
+    feature1Text: "अंग्रेजी और हिंदी दोनों में शायरी और चुटकुलों का आनंद लें।",
     feature2Title: "एआई जनरेशन",
-    feature2Text: "अपने विषयों के आधार पर तुरंत नई शायरी या चुटकुले बनाएं।", // Added Jokes back
+    feature2Text: "अपने विषयों के आधार पर तुरंत नई शायरी या चुटकुले इमोजी के साथ बनाएं।", // Updated text
     feature3Title: "सहेजें और साझा करें",
     feature3Text: "अपने पसंदीदा रखें और दोस्तों के साथ आसानी से साझा करें।",
     feature4Title: "विस्तृत संग्रह", // New Feature
     feature4Text: "उपयोगकर्ता और एआई सामग्री की बढ़ती लाइब्रेरी ब्राउज़ करें।", // New Feature
-    aiGenerateTitle: "एआई के साथ उत्पन्न करें",
-    aiGenerateDescription: "कोई कीवर्ड या थीम दर्ज करें (जैसे, \"दोस्ती\", \"बरसात का दिन\")",
+    aiGenerateTitle: "एआई के साथ उत्पन्न करें ✨", // Added emoji
+    aiGenerateDescription: "कोई कीवर्ड या थीम दर्ज करें (जैसे, \"दोस्ती\", \"बरसात का दिन\") और इमोजी के साथ सामग्री प्राप्त करें!", // Updated text
     aiSelectType: "प्रकार चुनें:",
     aiShayari: "शायरी",
     aiJoke: "चुटकुला", // Keep Joke option here for AI generation
@@ -177,7 +177,7 @@ const pageText = {
     moreContentInfo: "हजारों उपयोगकर्ता-प्रस्तुत और एआई-निर्मित रचनाओं का अन्वेषण करें। प्रतिदिन नई सामग्री!", // New Info
     howItWorksTitle: "यह कैसे काम करता है", // New Section Title
     howItWorks1: "श्रेणियाँ ब्राउज़ करें या विशिष्ट विषयों की खोज करें।", // Step 1
-    howItWorks2: "अद्वितीय चुटकुले या शायरी बनाने के लिए एआई जेनरेटर का उपयोग करें।", // Step 2
+    howItWorks2: "इमोजी के साथ अद्वितीय चुटकुले या शायरी बनाने के लिए एआई जेनरेटर का उपयोग करें।", // Updated text
     howItWorks3: "अपने पसंदीदा सहेजें, कॉपी करें, या तुरंत साझा करें!", // Step 3
   }
 };
@@ -311,6 +311,10 @@ export default function Home() {
         lang: currentLangForApi, // Tag generated content with the language it was generated in
       };
       setGeneratedContent(newContentItem); // Set the new content
+      toast({
+        title: language === 'en' ? 'Content Generated!' : 'सामग्री बन गयी!',
+        description: language === 'en' ? 'Scroll down to see your AI-generated result.' : 'अपना एआई-जनित परिणाम देखने के लिए नीचे स्क्रॉल करें।',
+      });
 
     } catch (error) {
       console.error('AI Generation Error:', error);

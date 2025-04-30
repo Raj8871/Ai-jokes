@@ -47,11 +47,11 @@ const jokeCategories = [
 
 const pageText = {
   en: {
-    title: "Jokes",
-    description: "Tickle your funny bone with our collection of jokes!",
+    title: "Jokes 😂",
+    description: "Tickle your funny bone with our collection of jokes! 😂",
     noContentFound: "No jokes found matching your search.",
-    aiGenerateTitle: "Generate Jokes with AI",
-    aiGenerateDescription: "Enter a keyword or theme (e.g., \"Animal\", \"Office\")",
+    aiGenerateTitle: "Generate Jokes with AI ✨", // Added emoji
+    aiGenerateDescription: "Enter a keyword or theme (e.g., \"Animal\", \"Office\") and get jokes with emojis!", // Updated text
     aiKeywordTheme: "Keyword / Theme:",
     aiPlaceholder: "e.g., Food, Computer...",
     aiSelectLength: "Select Joke Length (Lines):", // Updated label
@@ -65,11 +65,11 @@ const pageText = {
     generationFailedDesc: "Could not generate joke. Please try again.",
   },
   hi: {
-    title: "चुटकुले",
-    description: "हमारे चुटकुलों के संग्रह से अपनी गुदगुदी करें!",
+    title: "चुटकुले 😂",
+    description: "हमारे चुटकुलों के संग्रह से अपनी गुदगुदी करें! 😂",
     noContentFound: "आपकी खोज से मेल खाने वाला कोई चुटकुला नहीं मिला।",
-    aiGenerateTitle: "एआई के साथ चुटकुले उत्पन्न करें",
-    aiGenerateDescription: "कोई कीवर्ड या थीम दर्ज करें (जैसे, \"जानवर\", \"ऑफिस\")",
+    aiGenerateTitle: "एआई के साथ चुटकुले उत्पन्न करें ✨", // Added emoji
+    aiGenerateDescription: "कोई कीवर्ड या थीम दर्ज करें (जैसे, \"जानवर\", \"ऑफिस\") और इमोजी के साथ चुटकुले प्राप्त करें!", // Updated text
     aiKeywordTheme: "कीवर्ड / थीम:",
     aiPlaceholder: "उदा., खाना, कंप्यूटर...",
     aiSelectLength: "चुटकुले की लंबाई चुनें (पंक्तियाँ):", // Updated label
@@ -168,7 +168,7 @@ export default function JokesPage() {
       };
       setGeneratedJoke(newJokeItem); // Display the newly generated joke
       toast({
-        title: language === 'en' ? 'Joke Generated!' : 'चुटकुला बन गया!',
+        title: language === 'en' ? 'Joke Generated! 😂' : 'चुटकुला बन गया! 😂', // Added emoji
         description: language === 'en' ? 'Scroll down to see your AI-generated joke.' : 'अपना एआई-जनित चुटकुला देखने के लिए नीचे स्क्रॉल करें।',
       });
 
@@ -296,6 +296,7 @@ export default function JokesPage() {
                     <Laugh className="h-4 w-4 text-yellow-500"/>
                     <Smile className="h-4 w-4 text-green-500"/>
                     <MessageSquareText className="h-4 w-4 text-blue-400"/> {/* Icon for text */}
+                    <Sparkles className="h-4 w-4 text-yellow-400"/> {/* Added sparkles for AI */}
                     {currentText.aiResultTitle}
                 </h4>
                 {/* Pass generated joke's language */}

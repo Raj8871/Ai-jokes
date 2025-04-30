@@ -20,7 +20,7 @@ const GenerateContentInputSchema = z.object({
 export type GenerateContentInput = z.infer<typeof GenerateContentInputSchema>;
 
 const GenerateContentOutputSchema = z.object({
-  generatedText: z.string().describe('The generated joke or Shayari text.'),
+  generatedText: z.string().describe('The generated joke or Shayari text, including relevant emojis.'), // Updated description
 });
 export type GenerateContentOutput = z.infer<typeof GenerateContentOutputSchema>;
 
@@ -35,45 +35,46 @@ const generateContentPrompt = ai.definePrompt(
 
         Guidelines:
         - Make it concise and suitable for sharing.
+        - Include 1-3 relevant emojis within the text to enhance the mood or context. 🥳
         {{#if length}}
         - The {{type}} must be exactly {{length}} lines long.
         {{else}}
         - Keep the text relatively short.
         {{/if}}
-        - If the type is "joke", make it funny.
-        - If the type is "shayari", make it thoughtful or emotional, fitting the theme.
-        - Output only the {{type}} text itself.
-        - Respond in {{language}}. For Hindi, use Devanagari script.
+        - If the type is "joke", make it funny. 😂
+        - If the type is "shayari", make it thoughtful or emotional, fitting the theme. ❤️✨
+        - Output only the {{type}} text itself, including the emojis.
+        - Respond in {{language}}. For Hindi, use Devanagari script and appropriate Hindi emojis. नमस्ते 🙏
 
         Examples (Hindi Shayari):
         - Love (4 lines):
-            तुम्हारी आँखों में खो गया हूँ,
+            तुम्हारी आँखों में खो गया हूँ, 😍
             ये कैसी मोहब्बत हो गयी है।
-            दिल बस तुम्हें ही चाहता है,
-            क्या यही दीवानगी सही है?
+            दिल बस तुम्हें ही चाहता है, ❤️
+            क्या यही दीवानगी सही है? ✨
         - Friendship (7 lines):
-            दोस्ती का रिश्ता अनोखा है,
+            दोस्ती का रिश्ता अनोखा है,🤝
             हर पल नया एक धोखा है।
-            पर तुझ जैसा यार मिला,
+            पर तुझ जैसा यार मिला, 😊
             जैसे किस्मत का झोंका है।
-            हर मुश्किल आसान लगे,
+            हर मुश्किल आसान लगे, 💪
             जब तेरा साथ होता है,
-            ये दोस्ती सलामत रहे सदा।
+            ये दोस्ती सलामत रहे सदा। 🙏🌟
 
         Examples (English Joke):
         - Cat (4 lines):
-            Why are cats such bad poker players?
-            They always have a fur ace up their sleeve!
-            Plus, they get distracted by the laser pointer
-            Under the table.
+            Why are cats such bad poker players? 🤔
+            They always have a fur ace up their sleeve! 🐈
+            Plus, they get distracted by the laser pointer 🔴
+            Under the table. 😂
         - Computer (7 lines):
-            Why did the computer keep sneezing?
-            It had a virus!
+            Why did the computer keep sneezing? 🤧
+            It had a virus! 💻🦠
             Not just any virus, mind you,
-            A particularly nasty one.
+            A particularly nasty one. 😨
             It messed up the hard drive,
-            Corrupted the files, you see.
-            Bless you, PC!
+            Corrupted the files, you see. 💾➡️🗑️
+            Bless you, PC! 🙏😂
         `,
         // Example config (optional, adjust as needed)
         config: {
