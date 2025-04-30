@@ -17,18 +17,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { generateContent, type GenerateContentInput, type GenerateContentOutput } from '@/ai/flows/generate-content-flow';
 
 // Mock data (replace with actual data fetching / Firestore)
+// REMOVED JOKES FROM HERE
 const mockContent = {
   en: {
-    jokes: [
-      { id: 'j1', type: 'joke', text: "Why don't scientists trust atoms? Because they make up everything!", category: 'jokes', lang: 'en' },
-      { id: 'j2', type: 'joke', text: "Why did the scarecrow win an award? Because he was outstanding in his field!", category: 'jokes', lang: 'en' },
-      { id: 'j3', type: 'joke', text: "I told my wife she was drawing her eyebrows too high. She looked surprised.", category: 'jokes', lang: 'en' },
-      { id: 'j4', type: 'joke', text: "What do you call fake spaghetti? An impasta!", category: 'jokes', lang: 'en' },
-      { id: 'j5', type: 'joke', text: "Why did the bicycle fall over? Because it was two tired!", category: 'jokes', lang: 'en' },
-      { id: 'j6', type: 'joke', text: "What do you call a lazy kangaroo? Pouch potato!", category: 'jokes', lang: 'en' },
-      { id: 'j7', type: 'joke', text: "Why don't eggs tell jokes? They'd crack each other up!", category: 'jokes', lang: 'en' },
-      { id: 'j8', type: 'joke', text: "What musical instrument is found in the bathroom? A tuba toothpaste!", category: 'jokes', lang: 'en' },
-    ],
     romantic: [
       { id: 'r1', type: 'shayari', text: "In your eyes, a universe I see, a love story written, just for you and me.", category: 'romantic', lang: 'en' },
       { id: 'r2', type: 'shayari', text: "Like a gentle breeze, your love touches my soul, making my broken heart finally whole.", category: 'romantic', lang: 'en' },
@@ -58,16 +49,6 @@ const mockContent = {
     ]
   },
   hi: {
-    jokes: [
-      { id: 'hj1', type: 'joke', text: "वैज्ञानिक परमाणुओं पर भरोसा क्यों नहीं करते? क्योंकि वे सब कुछ बनाते हैं!", category: 'jokes', lang: 'hi' },
-      { id: 'hj2', type: 'joke', text: "बिजूका ने पुरस्कार क्यों जीता? क्योंकि वह अपने क्षेत्र में उत्कृष्ट था!", category: 'jokes', lang: 'hi' },
-      { id: 'hj3', type: 'joke', text: "मैंने अपनी पत्नी से कहा कि वह अपनी भौहें बहुत ऊंची बना रही है। वह हैरान दिखी।", category: 'jokes', lang: 'hi' },
-      { id: 'hj4', type: 'joke', text: "नकली स्पेगेटी को क्या कहते हैं? एक इम्पोस्टा!", category: 'jokes', lang: 'hi' },
-      { id: 'hj5', type: 'joke', text: "साइकिल क्यों गिर गई? क्योंकि वह दो थकी हुई थी!", category: 'jokes', lang: 'hi' },
-      { id: 'hj6', type: 'joke', text: "आलसी कंगारू को क्या कहते हैं? थैली आलू!", category: 'jokes', lang: 'hi' },
-      { id: 'hj7', type: 'joke', text: "अंडे चुटकुले क्यों नहीं सुनाते? वे एक-दूसरे को हंसाएंगे!", category: 'jokes', lang: 'hi' },
-      { id: 'hj8', type: 'joke', text: "बाथरूम में कौन सा वाद्य यंत्र पाया जाता है? एक टूबा टूथपेस्ट!", category: 'jokes', lang: 'hi' },
-    ],
     romantic: [
       { id: 'hr1', type: 'shayari', text: "तुम्हारी आँखों में, मैं एक ब्रह्मांड देखता हूँ, एक प्रेम कहानी लिखी है, सिर्फ तुम्हारे और मेरे लिए।", category: 'romantic', lang: 'hi' },
       { id: 'hr2', type: 'shayari', text: "एक हल्की हवा की तरह, तुम्हारा प्यार मेरी आत्मा को छूता है, मेरे टूटे हुए दिल को आखिरकार पूरा करता है।", category: 'romantic', lang: 'hi' },
@@ -106,10 +87,11 @@ export type ContentItem = {
   lang: 'en' | 'hi';
 };
 
-type Category = 'jokes' | 'romantic' | 'sad' | 'friendship' | 'motivational';
+// Removed 'jokes' from Category type
+type Category = 'romantic' | 'sad' | 'friendship' | 'motivational';
 
+// REMOVED 'jokes' category from the categories array
 const categories: { key: Category; en: string; hi: string }[] = [
-  { key: 'jokes', en: 'Jokes', hi: 'चुटकुले' },
   { key: 'romantic', en: 'Romantic Shayari', hi: 'रोमांटिक शायरी' },
   { key: 'sad', en: 'Sad Shayari', hi: 'दर्द भरी शायरी' },
   { key: 'friendship', en: 'Friendship Shayari', hi: 'दोस्ती शायरी' },
@@ -117,8 +99,8 @@ const categories: { key: Category; en: string; hi: string }[] = [
 ];
 
 const aiKeywordSuggestions = {
-  en: ["Love", "Friendship", "Motivation", "Breakup", "Funny Animals", "Work Life", "College Days", "Tech Humor"],
-  hi: ["प्यार", "दोस्ती", "प्रेरणा", "ब्रेकअप", "मज़ेदार जानवर", "कामकाजी जीवन", "कॉलेज के दिन", "तकनीकी हास्य"]
+  en: ["Love", "Friendship", "Motivation", "Breakup", "Rainy Day", "Work Life", "College Days", "Hope"], // Adjusted suggestions
+  hi: ["प्यार", "दोस्ती", "प्रेरणा", "ब्रेकअप", "बरसात का दिन", "कामकाजी जीवन", "कॉलेज के दिन", "आशा"] // Adjusted suggestions
 };
 
 // Text content for different languages
@@ -126,12 +108,12 @@ const pageText = {
   en: {
     welcome: "Welcome to ShayariSaga!",
     aboutTitle: "Discover, Generate, Share",
-    aboutText: "Your ultimate destination for beautiful Shayari and witty Jokes in both English and Hindi. Explore our curated collection, or let our AI generate unique content just for you!",
+    aboutText: "Your ultimate destination for beautiful Shayari in both English and Hindi. Explore our curated collection, or let our AI generate unique content just for you!", // Removed mention of jokes here
     featuresTitle: "Key Features",
     feature1Title: "Bilingual Content",
-    feature1Text: "Enjoy jokes and Shayari in both English and Hindi.",
+    feature1Text: "Enjoy Shayari in both English and Hindi.", // Changed text
     feature2Title: "AI Generation",
-    feature2Text: "Create new content instantly based on your themes.",
+    feature2Text: "Create new Shayari instantly based on your themes.", // Changed text
     feature3Title: "Save & Share",
     feature3Text: "Keep your favorites and easily share with friends.",
     feature4Title: "Extensive Collection", // New Feature
@@ -140,15 +122,15 @@ const pageText = {
     aiGenerateDescription: "Enter a keyword or theme (e.g., \"Friendship\", \"Rainy Day\")",
     aiSelectType: "Select Type:",
     aiShayari: "Shayari",
-    aiJoke: "Joke",
+    aiJoke: "Joke", // Keep Joke option here for AI generation, but tabs below are only Shayari
     aiKeywordTheme: "Keyword / Theme:",
     aiPlaceholder: "e.g., Love, Motivation...",
     aiTry: "Try:",
     aiGenerateButton: "Generate",
     aiGeneratingButton: "Generating...",
     aiResultTitle: "AI Generated Result:",
-    browseTitle: "Browse Collection",
-    noContentFound: "No content found matching your filters.",
+    browseTitle: "Browse Shayari Collection", // Changed title
+    noContentFound: "No Shayari found matching your filters.", // Changed text
     inputRequired: "Input Required",
     inputRequiredDesc: "Please enter a keyword or theme.",
     generationFailed: "Generation Failed",
@@ -162,12 +144,12 @@ const pageText = {
   hi: {
     welcome: "शायरी सागा में आपका स्वागत है!",
     aboutTitle: "खोजें, उत्पन्न करें, साझा करें",
-    aboutText: "अंग्रेजी और हिंदी दोनों में सुंदर शायरी और मजेदार चुटकुलों के लिए आपका अंतिम गंतव्य। हमारे क्यूरेटेड संग्रह का अन्वेषण करें, या हमारे एआई को केवल आपके लिए अद्वितीय सामग्री उत्पन्न करने दें!",
+    aboutText: "अंग्रेजी और हिंदी दोनों में सुंदर शायरी के लिए आपका अंतिम गंतव्य। हमारे क्यूरेटेड संग्रह का अन्वेषण करें, या हमारे एआई को केवल आपके लिए अद्वितीय सामग्री उत्पन्न करने दें!", // Removed mention of jokes here
     featuresTitle: "मुख्य विशेषताएं",
     feature1Title: "द्विभाषी सामग्री",
-    feature1Text: "अंग्रेजी और हिंदी दोनों में चुटकुलों और शायरी का आनंद लें।",
+    feature1Text: "अंग्रेजी और हिंदी दोनों में शायरी का आनंद लें।", // Changed text
     feature2Title: "एआई जनरेशन",
-    feature2Text: "अपने विषयों के आधार पर तुरंत नई सामग्री बनाएं।",
+    feature2Text: "अपने विषयों के आधार पर तुरंत नई शायरी बनाएं।", // Changed text
     feature3Title: "सहेजें और साझा करें",
     feature3Text: "अपने पसंदीदा रखें और दोस्तों के साथ आसानी से साझा करें।",
     feature4Title: "विस्तृत संग्रह", // New Feature
@@ -176,15 +158,15 @@ const pageText = {
     aiGenerateDescription: "कोई कीवर्ड या थीम दर्ज करें (जैसे, \"दोस्ती\", \"बरसात का दिन\")",
     aiSelectType: "प्रकार चुनें:",
     aiShayari: "शायरी",
-    aiJoke: "चुटकुला",
+    aiJoke: "चुटकुला", // Keep Joke option here for AI generation
     aiKeywordTheme: "कीवर्ड / थीम:",
     aiPlaceholder: "उदा., प्यार, प्रेरणा...",
     aiTry: "कोशिश करें:",
     aiGenerateButton: "उत्पन्न करें",
     aiGeneratingButton: "उत्पन्न हो रहा है...",
     aiResultTitle: "एआई उत्पन्न परिणाम:",
-    browseTitle: "संग्रह ब्राउज़ करें",
-    noContentFound: "आपके फ़िल्टर से मेल खाने वाली कोई सामग्री नहीं मिली।",
+    browseTitle: "शायरी संग्रह ब्राउज़ करें", // Changed title
+    noContentFound: "आपके फ़िल्टर से मेल खाने वाली कोई शायरी नहीं मिली।", // Changed text
     inputRequired: "इनपुट आवश्यक है",
     inputRequiredDesc: "कृपया कोई कीवर्ड या विषय दर्ज करें।",
     generationFailed: "उत्पन्न करने में विफल",
@@ -199,11 +181,12 @@ const pageText = {
 
 export default function Home() {
   const [language, setLanguage] = useState<'en' | 'hi'>('en');
+  // Adjusted state for content to only include Shayari categories
   const [content, setContent] = useState<Record<Category, ContentItem[]>>({
-    jokes: [], romantic: [], sad: [], friendship: [], motivational: []
+     romantic: [], sad: [], friendship: [], motivational: []
   });
   const [filteredContent, setFilteredContent] = useState<Record<Category, ContentItem[]>>({
-    jokes: [], romantic: [], sad: [], friendship: [], motivational: []
+     romantic: [], sad: [], friendship: [], motivational: []
   });
    const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<Category | 'all'>('all');
@@ -252,7 +235,7 @@ export default function Home() {
   }, [language, searchTerm, selectedCategoryFilter]); // Add filter dependencies
 
 
-  // Filter content function
+  // Filter content function - Updated to only handle Shayari categories
   const filterContent = (
     baseContent: Record<Category, ContentItem[]>,
     currentSearchTerm: string,
@@ -261,6 +244,7 @@ export default function Home() {
     let tempFiltered = {} as Record<Category, ContentItem[]>;
     const currentLang = localStorage.getItem('shayariSagaLang') as 'en' | 'hi' || 'en'; // Get current language
 
+    // Iterate only over Shayari categories
     categories.forEach(({ key }) => {
       // Check if baseContent exists and has the key, provide empty array if not
       const categoryContent = baseContent && baseContent[key] ? baseContent[key] : [];
@@ -312,7 +296,8 @@ export default function Home() {
         id: `ai-${Date.now()}`,
         type: aiContentType,
         text: result.generatedText,
-        category: 'ai-generated',
+        // Tag AI content differently - maybe use a more specific category?
+        category: aiContentType === 'joke' ? 'ai-joke' : 'ai-shayari',
         lang: currentLangForApi, // Tag generated content with the language it was generated in
       };
       setGeneratedContent(newContentItem);
@@ -594,7 +579,7 @@ export default function Home() {
             </h2>
             <SearchFilter
                 language={language}
-                categories={categories}
+                categories={categories} // Pass only Shayari categories
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
                 selectedCategory={selectedCategoryFilter}
@@ -603,10 +588,10 @@ export default function Home() {
        </motion.div>
 
 
-      {/* Category Tabs for Existing Content */}
-      <Tabs defaultValue="jokes" className="w-full max-w-4xl">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
-          {categories.map(cat => (
+      {/* Category Tabs for Existing Shayari Content */}
+      <Tabs defaultValue="romantic" className="w-full max-w-4xl"> {/* Default to a Shayari category */}
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-2 md:grid-cols-4"> {/* Adjusted grid columns */}
+          {categories.map(cat => ( // Iterate only over Shayari categories
             <TabsTrigger
                 key={cat.key + "-" + language}
                 value={cat.key}
@@ -624,7 +609,7 @@ export default function Home() {
           ))}
         </TabsList>
 
-        {categories.map(cat => (
+        {categories.map(cat => ( // Iterate only over Shayari categories
           <TabsContent key={cat.key + "-content-" + language} value={cat.key}>
             <motion.div
               initial={{ opacity: 0 }}

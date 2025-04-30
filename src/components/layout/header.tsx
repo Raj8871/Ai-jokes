@@ -28,13 +28,24 @@ const Header = () => {
         }
      };
      window.addEventListener('storage', handleStorageChange);
-     return () => window.removeEventListener('storage', handleStorageChange);
+      // Listen for custom language change event dispatched from other components
+      const handleLanguageChangedEvent = () => {
+         const updatedLang = localStorage.getItem('shayariSagaLang') as 'en' | 'hi' || 'en';
+         setLanguage(updatedLang);
+     };
+      window.addEventListener('languageChanged', handleLanguageChangedEvent);
 
-  }, []); // Run only once on mount
+     return () => {
+        window.removeEventListener('storage', handleStorageChange);
+        window.removeEventListener('languageChanged', handleLanguageChangedEvent);
+     };
+
+  }, [language]); // Rerun if language state changes locally too
+
 
   const handleLanguageToggle = (checked: boolean) => {
     const newLang = checked ? 'hi' : 'en';
-    setLanguage(newLang);
+    setLanguage(newLang); // Update local state immediately
     localStorage.setItem('shayariSagaLang', newLang);
      // Dispatch a custom event to notify other components (like the main page)
     window.dispatchEvent(new Event('languageChanged'));
@@ -44,6 +55,9 @@ const Header = () => {
     <>
        <Link href="/" className="hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
         {language === 'en' ? 'Home' : 'होम'}
+      </Link>
+       <Link href="/jokes" className="hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+        {language === 'en' ? 'Jokes' : 'चुटकुले'}
       </Link>
       {/* Add more links as needed */}
        {/* <Link href="/about" className="hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
