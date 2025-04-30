@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Copy, Heart, Share2, Loader2, Wand2, Languages, Lightbulb, Star, MessageSquareQuote, Sparkles, Bot } from 'lucide-react'; // Added Sparkles, Bot, Heart, MessageSquareQuote
+import { Copy, Heart, Share2, Loader2, Wand2, Languages, Lightbulb, Star, MessageSquareQuote, Sparkles, Bot, MessageSquareText, ListChecks, Smile, Laugh } from 'lucide-react'; // Added more icons
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import DailyHighlight from '@/components/content/daily-highlight';
@@ -17,7 +17,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { generateContent, type GenerateContentInput, type GenerateContentOutput } from '@/ai/flows/generate-content-flow';
 
 // Mock data (replace with actual data fetching / Firestore)
-// REMOVED JOKES FROM HERE
 const mockContent = {
   en: {
     romantic: [
@@ -111,9 +110,9 @@ const pageText = {
     aboutText: "Your ultimate destination for beautiful Shayari in both English and Hindi. Explore our curated collection, or let our AI generate unique content just for you!", // Removed mention of jokes here
     featuresTitle: "Key Features",
     feature1Title: "Bilingual Content",
-    feature1Text: "Enjoy Shayari in both English and Hindi.", // Changed text
+    feature1Text: "Enjoy Shayari & Jokes in both English and Hindi.", // Added Jokes back
     feature2Title: "AI Generation",
-    feature2Text: "Create new Shayari instantly based on your themes.", // Changed text
+    feature2Text: "Create new Shayari or Jokes instantly based on your themes.", // Added Jokes back
     feature3Title: "Save & Share",
     feature3Text: "Keep your favorites and easily share with friends.",
     feature4Title: "Extensive Collection", // New Feature
@@ -122,7 +121,9 @@ const pageText = {
     aiGenerateDescription: "Enter a keyword or theme (e.g., \"Friendship\", \"Rainy Day\")",
     aiSelectType: "Select Type:",
     aiShayari: "Shayari",
-    aiJoke: "Joke", // Keep Joke option here for AI generation, but tabs below are only Shayari
+    aiJoke: "Joke",
+    aiSelectLength: "Select Length (Lines):", // Added length label
+    aiLengthInfo: "(4-7 lines)", // Added length info
     aiKeywordTheme: "Keyword / Theme:",
     aiPlaceholder: "e.g., Love, Motivation...",
     aiTry: "Try:",
@@ -147,9 +148,9 @@ const pageText = {
     aboutText: "अंग्रेजी और हिंदी दोनों में सुंदर शायरी के लिए आपका अंतिम गंतव्य। हमारे क्यूरेटेड संग्रह का अन्वेषण करें, या हमारे एआई को केवल आपके लिए अद्वितीय सामग्री उत्पन्न करने दें!", // Removed mention of jokes here
     featuresTitle: "मुख्य विशेषताएं",
     feature1Title: "द्विभाषी सामग्री",
-    feature1Text: "अंग्रेजी और हिंदी दोनों में शायरी का आनंद लें।", // Changed text
+    feature1Text: "अंग्रेजी और हिंदी दोनों में शायरी और चुटकुलों का आनंद लें।", // Added Jokes back
     feature2Title: "एआई जनरेशन",
-    feature2Text: "अपने विषयों के आधार पर तुरंत नई शायरी बनाएं।", // Changed text
+    feature2Text: "अपने विषयों के आधार पर तुरंत नई शायरी या चुटकुले बनाएं।", // Added Jokes back
     feature3Title: "सहेजें और साझा करें",
     feature3Text: "अपने पसंदीदा रखें और दोस्तों के साथ आसानी से साझा करें।",
     feature4Title: "विस्तृत संग्रह", // New Feature
@@ -159,6 +160,8 @@ const pageText = {
     aiSelectType: "प्रकार चुनें:",
     aiShayari: "शायरी",
     aiJoke: "चुटकुला", // Keep Joke option here for AI generation
+    aiSelectLength: "लंबाई चुनें (पंक्तियाँ):", // Added length label
+    aiLengthInfo: "(4-7 पंक्तियाँ)", // Added length info
     aiKeywordTheme: "कीवर्ड / थीम:",
     aiPlaceholder: "उदा., प्यार, प्रेरणा...",
     aiTry: "कोशिश करें:",
@@ -179,6 +182,9 @@ const pageText = {
   }
 };
 
+// Define possible lengths for AI generation
+const possibleContentLengths = Array.from({ length: 4 }, (_, i) => i + 4); // Generates [4, 5, 6, 7]
+
 export default function Home() {
   const [language, setLanguage] = useState<'en' | 'hi'>('en');
   // Adjusted state for content to only include Shayari categories
@@ -195,6 +201,7 @@ export default function Home() {
   // AI Generation State
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiContentType, setAiContentType] = useState<'joke' | 'shayari'>('shayari');
+  const [aiContentLength, setAiContentLength] = useState<number>(4); // Default length 4 lines
   const [generatedContent, setGeneratedContent] = useState<ContentItem | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -289,11 +296,14 @@ export default function Home() {
         language: currentLangForApi,
         type: aiContentType,
         prompt: aiPrompt.trim(),
+        length: aiContentLength, // Pass the selected length
       };
       const result: GenerateContentOutput = await generateContent(input);
 
+       // Unique key using timestamp and prompt
+      const uniqueKey = `ai-${aiContentType}-${aiPrompt}-${Date.now()}`;
       const newContentItem: ContentItem = {
-        id: `ai-${Date.now()}`, // Ensure unique ID
+        id: uniqueKey,
         type: aiContentType,
         text: result.generatedText,
         // Tag AI content differently - maybe use a more specific category?
@@ -485,7 +495,7 @@ export default function Home() {
                     {currentText.aiSelectType}
                  </Label>
                  <RadioGroup
-                    defaultValue={aiContentType}
+                    value={aiContentType} // Controlled component
                     onValueChange={(value: 'joke' | 'shayari') => setAiContentType(value)}
                     className="flex space-x-4"
                     disabled={isGenerating}
@@ -498,6 +508,30 @@ export default function Home() {
                      <RadioGroupItem value="joke" id="ai-joke" />
                      <Label htmlFor="ai-joke" className={language === 'hi' ? 'font-hindi' : ''}>{currentText.aiJoke}</Label>
                    </div>
+                 </RadioGroup>
+            </div>
+
+             {/* Length Selection */}
+             <div className="space-y-2">
+                 <Label className={`text-sm font-medium flex items-center gap-1 ${language === 'hi' ? 'font-hindi' : ''}`}>
+                     <ListChecks className="h-4 w-4"/>
+                     {currentText.aiSelectLength}
+                      <span className="text-xs text-muted-foreground">
+                         {currentText.aiLengthInfo}
+                      </span>
+                 </Label>
+                 <RadioGroup
+                    value={String(aiContentLength)} // Controlled component
+                    onValueChange={(value: string) => setAiContentLength(parseInt(value, 10))}
+                    className="flex flex-wrap gap-x-4 gap-y-2"
+                    disabled={isGenerating}
+                  >
+                   {possibleContentLengths.map(len => (
+                      <div key={len} className="flex items-center space-x-2">
+                        <RadioGroupItem value={String(len)} id={`content-len-${len}`}/>
+                        <Label htmlFor={`content-len-${len}`}>{len}</Label>
+                      </div>
+                   ))}
                  </RadioGroup>
             </div>
 
@@ -562,8 +596,11 @@ export default function Home() {
                 <h4 className={`font-semibold mb-2 flex items-center gap-1 ${language === 'hi' ? 'font-hindi' : ''}`}>
                     {generatedContent.type === 'shayari' && <Heart className="h-4 w-4 text-red-500"/>}
                     {generatedContent.type === 'shayari' && <MessageSquareQuote className="h-4 w-4 text-blue-400"/>}
+                    {generatedContent.type === 'joke' && <Laugh className="h-4 w-4 text-yellow-500"/>}
+                    {generatedContent.type === 'joke' && <Smile className="h-4 w-4 text-green-500"/>}
                     <Sparkles className="h-4 w-4 text-yellow-400"/>
                     <Bot className="h-4 w-4 text-green-400"/>
+                    <MessageSquareText className="h-4 w-4 text-purple-400"/> {/* Generic Text Icon */}
                     {currentText.aiResultTitle}
                 </h4>
                 {/* Ensure generated content uses the correct language prop */}

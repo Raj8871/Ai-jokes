@@ -14,7 +14,8 @@ const GenerateContentInputSchema = z.object({
   language: z.enum(['en', 'hi']).describe('The language for the generated content (English or Hindi).'),
   type: z.enum(['joke', 'shayari']).describe('The type of content to generate (joke or Shayari).'),
   prompt: z.string().describe('The category, keyword, or theme for the content.'),
-  length: z.number().min(2).max(10).optional().describe('The desired number of lines for the joke (2-10). Only applicable if type is "joke".'), // Updated max length to 10
+  // Updated length constraint to be between 4 and 7 lines, optional
+  length: z.number().min(4).max(7).optional().describe('The desired number of lines (4-7).'),
 });
 export type GenerateContentInput = z.infer<typeof GenerateContentInputSchema>;
 
@@ -33,30 +34,51 @@ const generateContentPrompt = ai.definePrompt(
         Generate a short {{type}} in {{language}} based on the following theme/keyword: "{{prompt}}".
 
         Guidelines:
-        - If the type is "joke", make it funny and concise. {{#if length}}The joke should be exactly {{length}} lines long.{{/if}}
+        - Make it concise and suitable for sharing.
+        {{#if length}}
+        - The {{type}} must be exactly {{length}} lines long.
+        {{else}}
+        - Keep the text relatively short.
+        {{/if}}
+        - If the type is "joke", make it funny.
         - If the type is "shayari", make it thoughtful or emotional, fitting the theme.
-        - Keep the text relatively short, suitable for sharing.
         - Output only the {{type}} text itself.
         - Respond in {{language}}. For Hindi, use Devanagari script.
-        - Example for Hindi Shayari on "love": तुम्हारी आँखों में खो गया हूँ, ये कैसी मोहब्बत हो गयी है।
-        - Example for English Joke on "cat": Why are cats such bad poker players? They always have a fur ace up their sleeve!
-        - Example for English 2-line joke on "dog": What do you call a dog magician? A labracadabrador. It's a ruff trick!
-        - Example for English 10-line joke on "computer":
+
+        Examples (Hindi Shayari):
+        - Love (4 lines):
+            तुम्हारी आँखों में खो गया हूँ,
+            ये कैसी मोहब्बत हो गयी है।
+            दिल बस तुम्हें ही चाहता है,
+            क्या यही दीवानगी सही है?
+        - Friendship (7 lines):
+            दोस्ती का रिश्ता अनोखा है,
+            हर पल नया एक धोखा है।
+            पर तुझ जैसा यार मिला,
+            जैसे किस्मत का झोंका है।
+            हर मुश्किल आसान लगे,
+            जब तेरा साथ होता है,
+            ये दोस्ती सलामत रहे सदा।
+
+        Examples (English Joke):
+        - Cat (4 lines):
+            Why are cats such bad poker players?
+            They always have a fur ace up their sleeve!
+            Plus, they get distracted by the laser pointer
+            Under the table.
+        - Computer (7 lines):
             Why did the computer keep sneezing?
             It had a virus!
             Not just any virus, mind you,
             A particularly nasty one.
             It messed up the hard drive,
             Corrupted the files, you see.
-            The firewall tried its best,
-            But the malware slipped right through.
-            So the computer just sat there,
-            Blessing itself, "Achoo!"
+            Bless you, PC!
         `,
         // Example config (optional, adjust as needed)
         config: {
          temperature: 0.8, // Higher temperature for more creative responses
-         maxOutputTokens: 250, // Increased token limit slightly for potentially longer jokes
+         maxOutputTokens: 300, // Increased token limit slightly for potentially longer jokes/shayari
         },
     }
 );
@@ -70,10 +92,8 @@ const generateContentFlow = ai.defineFlow(
     outputSchema: GenerateContentOutputSchema,
   },
   async (input) => {
-    // Only pass length if type is joke
-    const apiInput = input.type === 'joke' ? input : { ...input, length: undefined };
-
-    const llmResponse = await generateContentPrompt(apiInput);
+    // Pass the input directly, the prompt handles the optional length
+    const llmResponse = await generateContentPrompt(input);
     const output = llmResponse.output;
 
     if (!output?.generatedText) {

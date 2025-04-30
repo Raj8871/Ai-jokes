@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Loader2, Wand2, Sparkles, Bot, Laugh, Smile } from 'lucide-react'; // Added Laugh, Smile
+import { Loader2, Wand2, Sparkles, Bot, Laugh, Smile, MessageSquareText, ListChecks } from 'lucide-react'; // Added MessageSquareText, ListChecks
 import { useToast } from '@/hooks/use-toast';
 import { generateContent, type GenerateContentInput, type GenerateContentOutput } from '@/ai/flows/generate-content-flow';
 
@@ -54,7 +54,8 @@ const pageText = {
     aiGenerateDescription: "Enter a keyword or theme (e.g., \"Animal\", \"Office\")",
     aiKeywordTheme: "Keyword / Theme:",
     aiPlaceholder: "e.g., Food, Computer...",
-    aiSelectLength: "Select Joke Length (Lines):",
+    aiSelectLength: "Select Joke Length (Lines):", // Updated label
+    aiLengthInfo: "(4-7 lines)", // Added info text for length
     aiGenerateButton: "Generate Joke",
     aiGeneratingButton: "Generating...",
     aiResultTitle: "AI Generated Joke:",
@@ -71,7 +72,8 @@ const pageText = {
     aiGenerateDescription: "कोई कीवर्ड या थीम दर्ज करें (जैसे, \"जानवर\", \"ऑफिस\")",
     aiKeywordTheme: "कीवर्ड / थीम:",
     aiPlaceholder: "उदा., खाना, कंप्यूटर...",
-    aiSelectLength: "चुटकुले की लंबाई चुनें (पंक्तियाँ):",
+    aiSelectLength: "चुटकुले की लंबाई चुनें (पंक्तियाँ):", // Updated label
+    aiLengthInfo: "(4-7 पंक्तियाँ)", // Added info text for length
     aiGenerateButton: "चुटकुला उत्पन्न करें",
     aiGeneratingButton: "उत्पन्न हो रहा है...",
     aiResultTitle: "एआई उत्पन्न चुटकुला:",
@@ -82,7 +84,8 @@ const pageText = {
   }
 };
 
-const possibleJokeLengths = Array.from({ length: 9 }, (_, i) => i + 2); // Generates [2, 3, ..., 10]
+// Updated possible joke lengths
+const possibleJokeLengths = Array.from({ length: 4 }, (_, i) => i + 4); // Generates [4, 5, 6, 7]
 
 export default function JokesPage() {
   const [language, setLanguage] = useState<'en' | 'hi'>('en');
@@ -93,7 +96,7 @@ export default function JokesPage() {
 
   // AI Joke Generation State
   const [aiJokePrompt, setAiJokePrompt] = useState('');
-  const [aiJokeLength, setAiJokeLength] = useState<number>(2); // Default length 2 lines
+  const [aiJokeLength, setAiJokeLength] = useState<number>(4); // Default length 4 lines
   const [generatedJoke, setGeneratedJoke] = useState<ContentItem | null>(null);
   const [isGeneratingJoke, setIsGeneratingJoke] = useState(false);
 
@@ -154,8 +157,10 @@ export default function JokesPage() {
       };
       const result: GenerateContentOutput = await generateContent(input);
 
+       // Use timestamp and prompt for a more unique key, reducing chance of duplicate keys if generation is fast
+      const uniqueKey = `ai-joke-${aiJokePrompt}-${Date.now()}`;
       const newJokeItem: ContentItem = {
-        id: `ai-joke-${Date.now()}`, // Use timestamp for a unique ID
+        id: uniqueKey,
         type: 'joke',
         text: result.generatedText,
         category: 'ai-joke', // Mark as AI generated joke
@@ -239,14 +244,17 @@ export default function JokesPage() {
 
             {/* Joke Length Selection */}
             <div className="space-y-2">
-                 <Label className={`text-sm font-medium ${language === 'hi' ? 'font-hindi' : ''}`}>
+                 <Label className={`text-sm font-medium flex items-center gap-1 ${language === 'hi' ? 'font-hindi' : ''}`}>
+                    <ListChecks className="h-4 w-4"/> {/* Icon for length */}
                     {currentText.aiSelectLength}
+                     <span className="text-xs text-muted-foreground">
+                        {currentText.aiLengthInfo}
+                     </span>
                  </Label>
                  <RadioGroup
-                    defaultValue={String(aiJokeLength)}
+                    value={String(aiJokeLength)} // Controlled component
                     onValueChange={(value: string) => setAiJokeLength(parseInt(value, 10))}
                     className="flex flex-wrap gap-x-4 gap-y-2" // Use flex-wrap for better spacing
-                    // Removed disabled prop, should be enabled
                   >
                    {possibleJokeLengths.map(len => (
                       <div key={len} className="flex items-center space-x-2">
@@ -277,17 +285,20 @@ export default function JokesPage() {
             {/* Generated Joke Display */}
             {generatedJoke && (
               <motion.div
-                key={generatedJoke.id} // Use joke ID as key to force re-render on new joke
+                key={generatedJoke.id} // Use the unique joke ID as key
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }} // Add exit animation if needed elsewhere
                 transition={{ duration: 0.5 }}
                 className="mt-4 pt-4 border-t border-border"
               >
                 <h4 className={`font-semibold mb-2 flex items-center gap-1 ${language === 'hi' ? 'font-hindi' : ''}`}>
-                    <Laugh className="h-4 w-4 text-yellow-500"/> {/* Added Laugh Icon */}
-                    <Smile className="h-4 w-4 text-green-500"/> {/* Added Smile Icon */}
+                    <Laugh className="h-4 w-4 text-yellow-500"/>
+                    <Smile className="h-4 w-4 text-green-500"/>
+                    <MessageSquareText className="h-4 w-4 text-blue-400"/> {/* Icon for text */}
                     {currentText.aiResultTitle}
                 </h4>
+                {/* Pass generated joke's language */}
                 <ContentCard content={generatedJoke} language={generatedJoke.lang} />
               </motion.div>
             )}
@@ -325,6 +336,7 @@ export default function JokesPage() {
       >
         {filteredJokes.length > 0 ? (
           filteredJokes.map(item => (
+             // Pass item's language
             <ContentCard key={item.id} content={item} language={item.lang} />
           ))
         ) : (
