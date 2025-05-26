@@ -1,3 +1,4 @@
+
 // src/components/content/content-card.tsx
 'use client';
 
@@ -17,45 +18,45 @@ interface ContentCardProps {
 // Text content for different languages used within the card
 const cardText = {
     en: {
-        copiedTitle: "Copied!",
+        copiedTitle: "Copied! 👍", // Added emoji
         copiedDesc: "Content copied to clipboard.",
-        copyErrorTitle: "Error",
+        copyErrorTitle: "Copy Error 😞", // Added emoji
         copyErrorDesc: "Could not copy content.",
-        shareTitle: "ShayariSaga Content", // Default share title
-        shareApiSuccess: "Shared!",
-        shareApiNotSupported: "Link Copied",
-        shareApiNotSupportedDesc: "Sharing not supported, link copied instead.",
-        shareApiNotSupportedNonHttpsDesc: "Sharing via API failed (non-HTTPS). Link copied instead.",
-        sharePermissionDeniedTitle: "Sharing Blocked",
-        sharePermissionDeniedDesc: "Browser blocked sharing. Try copying the link.",
-        shareNotFoundErrorTitle: "Sharing Failed",
+        shareTitle: "ShayariSaga Content ✨", // Added emoji
+        shareApiSuccess: "Shared successfully! 🚀", // Added emoji
+        shareApiNotSupported: "Link Copied Instead 🔗", // Added emoji
+        shareApiNotSupportedDesc: "Direct sharing isn't supported here, so the link was copied for you.",
+        shareApiNotSupportedNonHttpsDesc: "Sharing via API failed (non-HTTPS). Link copied instead. Please use HTTPS for direct sharing.",
+        sharePermissionDeniedTitle: "Sharing Blocked 🚫", // Added emoji
+        sharePermissionDeniedDesc: "Browser blocked sharing. Try copying the link. Ensure you're on HTTPS.",
+        shareNotFoundErrorTitle: "Sharing App Not Found 🤷", // Added emoji
         shareNotFoundErrorDesc: "Could not find a suitable app to share with. Link copied instead.",
-        shareErrorTitle: "Error Sharing",
+        shareErrorTitle: "Sharing Error 😥", // Added emoji
         shareErrorDesc: "Could not share the content. Link copied instead.",
-        favoriteAdd: "Added to Favorites",
-        favoriteRemove: "Removed from Favorites",
+        favoriteAdd: "Added to Favorites! ❤️", // Added emoji
+        favoriteRemove: "Removed from Favorites 💔", // Added emoji
         copyLabel: "Copy",
         shareLabel: "Share",
         favoriteLabel: "Favorite",
     },
     hi: {
-        copiedTitle: "कॉपी किया गया!",
+        copiedTitle: "कॉपी किया गया! 👍", // Added emoji
         copiedDesc: "सामग्री क्लिपबोर्ड पर कॉपी की गई।",
-        copyErrorTitle: "त्रुटि",
+        copyErrorTitle: "कॉपी त्रुटि 😞", // Added emoji
         copyErrorDesc: "सामग्री कॉपी नहीं की जा सकी।",
-        shareTitle: "शायरी सागा सामग्री", // Default share title
-        shareApiSuccess: "शेयर किया गया!",
-        shareApiNotSupported: "लिंक कॉपी किया गया",
-        shareApiNotSupportedDesc: "शेयरिंग समर्थित नहीं है, इसके बजाय लिंक कॉपी किया गया।",
-        shareApiNotSupportedNonHttpsDesc: "API द्वारा शेयरिंग विफल (गैर-HTTPS)। इसके बजाय लिंक कॉपी किया गया।",
-        sharePermissionDeniedTitle: "शेयरिंग अवरुद्ध",
-        sharePermissionDeniedDesc: "ब्राउज़र ने शेयरिंग ब्लॉक कर दी है। लिंक कॉपी करने का प्रयास करें।",
-        shareNotFoundErrorTitle: "शेयरिंग विफल",
+        shareTitle: "शायरी सागा सामग्री ✨", // Added emoji
+        shareApiSuccess: "सफलतापूर्वक साझा किया गया! 🚀", // Added emoji
+        shareApiNotSupported: "लिंक कॉपी किया गया 🔗", // Added emoji
+        shareApiNotSupportedDesc: "यहां डायरेक्ट शेयरिंग समर्थित नहीं है, इसलिए आपके लिए लिंक कॉपी किया गया।",
+        shareApiNotSupportedNonHttpsDesc: "API द्वारा शेयरिंग विफल (गैर-HTTPS)। इसके बजाय लिंक कॉपी किया गया। कृपया डायरेक्ट शेयरिंग के लिए HTTPS का उपयोग करें।",
+        sharePermissionDeniedTitle: "शेयरिंग अवरुद्ध 🚫", // Added emoji
+        sharePermissionDeniedDesc: "ब्राउज़र ने शेयरिंग ब्लॉक कर दी है। लिंक कॉपी करने का प्रयास करें। सुनिश्चित करें कि आप HTTPS पर हैं।",
+        shareNotFoundErrorTitle: "शेयरिंग ऐप नहीं मिला 🤷", // Added emoji
         shareNotFoundErrorDesc: "शेयर करने के लिए कोई उपयुक्त ऐप नहीं मिला। इसके बजाय लिंक कॉपी किया गया।",
-        shareErrorTitle: "शेयर करने में त्रुटि",
+        shareErrorTitle: "शेयर करने में त्रुटि 😥", // Added emoji
         shareErrorDesc: "सामग्री शेयर नहीं की जा सकी। इसके बजाय लिंक कॉपी किया गया।",
-        favoriteAdd: "पसंदीदा में जोड़ा गया",
-        favoriteRemove: "पसंदीदा से हटाया गया",
+        favoriteAdd: "पसंदीदा में जोड़ा गया! ❤️", // Added emoji
+        favoriteRemove: "पसंदीदा से हटाया गया 💔", // Added emoji
         copyLabel: "कॉपी करें",
         shareLabel: "शेयर करें",
         favoriteLabel: "पसंदीदा",
@@ -113,7 +114,11 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
      // Ensure this runs only on the client and navigator is available
      if (!isClient || typeof navigator === 'undefined') {
         console.warn("Share button clicked before client hydration or navigator is undefined.");
-        // Optionally show a message or just do nothing
+        toast({
+            title: currentText.shareErrorTitle,
+            description: "Share feature not ready yet. Please try again shortly.",
+            variant: "destructive",
+        });
         return;
      }
 
@@ -125,15 +130,15 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
 
      try {
         // Check for HTTPS, as navigator.share often requires it
-        if (!window.location.protocol.startsWith('https')) {
-            console.warn("Web Share API may require HTTPS.");
-            handleCopy(); // Fallback to copy directly if not HTTPS
+        if (typeof window !== 'undefined' && !window.location.protocol.startsWith('https')) {
+            console.warn("Web Share API requires HTTPS. Falling back to copy.");
+            handleCopy();
             toast({
                 title: currentText.shareApiNotSupported,
                 description: currentText.shareApiNotSupportedNonHttpsDesc,
-                variant: 'destructive' // Indicate it's not the ideal outcome
+                variant: 'destructive'
             });
-            return; // Exit early
+            return; 
         }
 
         if (navigator.share) {
@@ -151,16 +156,15 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
              });
         }
      } catch (err) {
-       console.error('Failed to share: ', err); // Keep logging for debugging
-       // Check error type/message
+       console.error('Share API Error:', err); 
        let errorTitle = currentText.shareErrorTitle;
        let errorDesc = currentText.shareErrorDesc;
 
        if (err instanceof DOMException) {
             if (err.name === 'AbortError') {
-                // User cancelled the share operation, don't show an error toast
+                // User cancelled the share operation, don't show an error toast or fallback
                 console.log('Share cancelled by user.');
-                return; // Exit without fallback or error toast
+                return; 
             } else if (err.name === 'NotAllowedError') {
                  // Permission denied - often requires HTTPS or user gesture
                  errorTitle = currentText.sharePermissionDeniedTitle;
@@ -171,8 +175,9 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
                 errorDesc = currentText.shareNotFoundErrorDesc;
             }
        }
-       // Always fallback to copy for any error other than AbortError
-        handleCopy(); // Fallback to copy
+       
+       // Fallback to copy for any error other than AbortError
+        handleCopy(); 
         toast({
             title: errorTitle,
             description: errorDesc,
@@ -197,13 +202,13 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
   const cardVariants = {
     hidden: { opacity: 0, scale: 0.9 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
-    hover: { scale: 1.03, transition: { type: 'spring', stiffness: 400, damping: 10 } } // Smoother spring animation
+    hover: { scale: 1.03, y: -5, boxShadow: "0px 10px 20px hsla(var(--primary) / 0.2)" }, // Enhanced hover
   };
 
   // Animation variants for the buttons
   const buttonVariants = {
      tap: { scale: 0.9, transition: { type: 'spring', stiffness: 500, damping: 15 } },
-     hover: { scale: 1.1, transition: { type: 'spring', stiffness: 400, damping: 10 } } // Add hover effect to buttons too
+     hover: { scale: 1.1, color: "hsl(var(--primary))", transition: { type: 'spring', stiffness: 400, damping: 10 } }
   };
 
 
@@ -215,25 +220,27 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
         whileHover="hover"
         // Use language in key to ensure card re-renders correctly if language changes while visible
         key={content.id + language}
+        className="rounded-lg overflow-hidden" // Ensure shadow is clipped if card has rounded corners
     >
       {/* Apply Hindi font class based on content language, not UI language */}
-      <Card className={`flex flex-col h-full shadow-lg border-primary/20 group hover:shadow-primary/30 transition-shadow duration-300 ${content.lang === 'hi' ? 'font-hindi' : ''}`}>
+      <Card className={`flex flex-col h-full shadow-lg border-border group transition-all duration-300 ease-in-out ${content.lang === 'hi' ? 'font-hindi' : ''}`}>
         <CardContent className="flex-grow p-4 pt-6">
-          <p className="text-foreground leading-relaxed">{content.text}</p>
+           {/* Ensure text breaks words and handles long lines gracefully */}
+          <p className="text-foreground leading-relaxed break-words whitespace-pre-line">{content.text}</p>
         </CardContent>
-        <CardFooter className="p-2 border-t mt-auto flex justify-end space-x-1">
+        <CardFooter className="p-2 border-t mt-auto flex justify-end space-x-1 bg-muted/30">
           <motion.div variants={buttonVariants} whileTap="tap" whileHover="hover">
-             <Button variant="ghost" size="icon" onClick={handleCopy} aria-label={currentText.copyLabel} disabled={!isClient}>
+             <Button variant="ghost" size="icon" onClick={handleCopy} aria-label={currentText.copyLabel} disabled={!isClient} title={currentText.copyLabel}>
                 <Copy className="h-4 w-4" />
              </Button>
            </motion.div>
            <motion.div variants={buttonVariants} whileTap="tap" whileHover="hover">
-            <Button variant="ghost" size="icon" onClick={handleShare} aria-label={currentText.shareLabel} disabled={!isClient}>
+            <Button variant="ghost" size="icon" onClick={handleShare} aria-label={currentText.shareLabel} disabled={!isClient} title={currentText.shareLabel}>
                 <Share2 className="h-4 w-4" />
             </Button>
            </motion.div>
            <motion.div variants={buttonVariants} whileTap="tap" whileHover="hover">
-            <Button variant="ghost" size="icon" onClick={handleFavorite} aria-label={currentText.favoriteLabel} disabled={!isClient}>
+            <Button variant="ghost" size="icon" onClick={handleFavorite} aria-label={currentText.favoriteLabel} disabled={!isClient} title={currentText.favoriteLabel}>
                  <Heart className={`h-4 w-4 transition-all duration-200 ${isFavorite ? 'fill-destructive text-destructive scale-110' : 'text-muted-foreground group-hover:text-destructive'}`} />
             </Button>
            </motion.div>
@@ -244,3 +251,4 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, language }) => {
 };
 
 export default ContentCard;
+
